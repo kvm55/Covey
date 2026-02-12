@@ -1,27 +1,56 @@
 "use client";
-import { useState } from "react";
-import { properties } from "@/data/properties";
+import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase";
+
+type Property = {
+  id: string;
+  street_address: string;
+  city: string;
+  state: string;
+  zip: string;
+  price: number;
+  cap_rate: number;
+  irr: number;
+  equity_multiple: number;
+  type: string;
+  noi_margin: number | null;
+};
 
 export default function DashboardPage() {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [portfolio, setPortfolio] = useState<string[]>([]);
   const [buyBox, setBuyBox] = useState({
     minPrice: 0,
     maxPrice: 10000000,
-    minYield: 0,
-    maxYield: 20,
-    markets: [] as string[],
+    minCapRate: 0,
+    maxCapRate: 20,
   });
+
+  useEffect(() => {
+    async function fetchProperties() {
+      const supabase = createClient();
+      const { data, error } = await supabase.from("properties").select("*");
+      if (error) {
+        console.error("Error fetching properties:", error.message);
+      } else {
+        setProperties(data || []);
+      }
+      setLoading(false);
+    }
+    fetchProperties();
+  }, []);
 
   const portfolioProperties = properties.filter((p) => portfolio.includes(p.id));
   const totalValue = portfolioProperties.reduce((sum, p) => sum + p.price, 0);
-  const avgYield = portfolioProperties.length
-    ? portfolioProperties.reduce((sum, p) => sum + (p.projectedStabilizedYield * 100), 0) / portfolioProperties.length
+  const avgCapRate = portfolioProperties.length
+    ? portfolioProperties.reduce((sum, p) => sum + (p.cap_rate * 100), 0) / portfolioProperties.length
     : 0;
   const avgIrr = portfolioProperties.length
     ? portfolioProperties.reduce((sum, p) => sum + (p.irr * 100), 0) / portfolioProperties.length
     : 0;
   const avgEquityMultiple = portfolioProperties.length
-    ? portfolioProperties.reduce((sum, p) => sum + p.equityMultiple, 0) / portfolioProperties.length
+    ? portfolioProperties.reduce((sum, p) => sum + p.equity_multiple, 0) / portfolioProperties.length
     : 0;
 
   const handleAddToPortfolio = (id: string) => {
@@ -33,15 +62,16 @@ export default function DashboardPage() {
   };
 
   const filteredProperties = properties.filter((p) => {
-    const yieldPercent = p.projectedStabilizedYield * 100;
+    const capRatePercent = p.cap_rate * 100;
     return (
       p.price >= buyBox.minPrice &&
       p.price <= buyBox.maxPrice &&
-      yieldPercent >= buyBox.minYield &&
-      yieldPercent <= buyBox.maxYield &&
-      (buyBox.markets.length === 0 || buyBox.markets.includes(p.market))
+      capRatePercent >= buyBox.minCapRate &&
+      capRatePercent <= buyBox.maxCapRate
     );
   });
+
+  if (loading) return <main className="container"><p>Loading dashboard...</p></main>;
 
   return (
     <main className="container">
@@ -51,7 +81,7 @@ export default function DashboardPage() {
         <h2>Portfolio Overview</h2>
         <ul>
           <li>Total Value: ${totalValue.toLocaleString()}</li>
-          <li>Average Yield: {avgYield.toFixed(2)}%</li>
+          <li>Average Cap Rate: {avgCapRate.toFixed(2)}%</li>
           <li>Average IRR: {avgIrr.toFixed(2)}%</li>
           <li>Average Equity Multiple: {avgEquityMultiple.toFixed(2)}x</li>
         </ul>
@@ -83,19 +113,19 @@ export default function DashboardPage() {
           />
         </label>
         <label>
-          Min Yield: 
+          Min Cap Rate (%):
           <input
             type="number"
-            value={buyBox.minYield}
-            onChange={(e) => setBuyBox({ ...buyBox, minYield: parseFloat(e.target.value) })}
+            value={buyBox.minCapRate}
+            onChange={(e) => setBuyBox({ ...buyBox, minCapRate: parseFloat(e.target.value) })}
           />
         </label>
         <label>
-          Max Yield: 
+          Max Cap Rate (%):
           <input
             type="number"
-            value={buyBox.maxYield}
-            onChange={(e) => setBuyBox({ ...buyBox, maxYield: parseFloat(e.target.value) })}
+            value={buyBox.maxCapRate}
+            onChange={(e) => setBuyBox({ ...buyBox, maxCapRate: parseFloat(e.target.value) })}
           />
         </label>
       </section>
@@ -105,7 +135,7 @@ export default function DashboardPage() {
         <ul>
           {filteredProperties.map((p) => (
             <li key={p.id}>
-              {p.title} – ${p.price.toLocaleString()} – Yield: {(p.projectedStabilizedYield * 100).toFixed(2)}%
+              {p.street_address}, {p.city} – ${p.price.toLocaleString()} – Cap Rate: {(p.cap_rate * 100).toFixed(2)}%
               <button onClick={() => handleAddToPortfolio(p.id)}>Add</button>
               <button onClick={() => handleRemoveFromPortfolio(p.id)}>Remove</button>
             </li>
