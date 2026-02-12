@@ -2,10 +2,10 @@
 :root {
   /* Covey / TUG Brand Colors */
   --color-evergreen: #112521;
-  --color-pine: #103F31;
-  --color-summit: #475959;
-  --color-spruce: #7B8895;
-  --color-slate: #BFBDB2;
+  --color-pine: #1C3F31;
+  --color-summit: #475853;
+  --color-spruce: #7B8B85;
+  --color-slate: #BFBDB8;
 
   /* Global usage */
   --color-background: var(--color-slate);

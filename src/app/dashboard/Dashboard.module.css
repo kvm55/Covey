@@ -1,0 +1,361 @@
+/* ── Page Layout ── */
+.page {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.pageHeader {
+  margin-bottom: 32px;
+}
+
+.pageTitle {
+  font-family: var(--font-family-headings);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 4px;
+}
+
+.pageSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  margin: 0;
+}
+
+/* ── Metrics Bar ── */
+.metricsBar {
+  display: flex;
+  align-items: stretch;
+  background-color: var(--color-evergreen);
+  border-radius: 10px;
+  padding: 0;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  color: #fff;
+  position: relative;
+}
+
+.metric + .metric::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.metricValue {
+  font-family: var(--font-family-headings);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.metricLabel {
+  font-family: var(--font-family-body);
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
+/* ── Two-Column Grid ── */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.cardTitle {
+  font-family: var(--font-family-headings);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+  margin: 0 0 16px;
+}
+
+/* ── Map Placeholder ── */
+.mapPlaceholder {
+  width: 100%;
+  height: 220px;
+  background-color: #e8eded;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-summit);
+  font-family: var(--font-family-body);
+  font-size: 14px;
+}
+
+/* ── Buy Box Inputs ── */
+.inputGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inputLabel {
+  font-family: var(--font-family-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-summit);
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputPrefix {
+  position: absolute;
+  left: 10px;
+  font-size: 13px;
+  color: var(--color-spruce);
+  pointer-events: none;
+  font-family: var(--font-family-body);
+}
+
+.input {
+  width: 100%;
+  padding: 8px 10px 8px 24px;
+  font-size: 14px;
+  font-family: var(--font-family-body);
+  border: 1.5px solid var(--color-slate);
+  border-radius: 6px;
+  background-color: #fafbfc;
+  color: var(--color-evergreen);
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-pine);
+  box-shadow: 0 0 0 2px rgba(28, 63, 49, 0.12);
+}
+
+/* ── Matching Properties List ── */
+.propertyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.propertyList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.propertyList::-webkit-scrollbar-thumb {
+  background: var(--color-slate);
+  border-radius: 3px;
+}
+
+.propertyItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0ee;
+}
+
+.propertyItem:last-child {
+  border-bottom: none;
+}
+
+.propertyInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.propertyName {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.propertyMeta {
+  font-family: var(--font-family-body);
+  font-size: 12px;
+  color: var(--color-spruce);
+}
+
+.propertyActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+/* ── Buttons ── */
+.btnAdd {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: var(--font-family-headings);
+  font-weight: 600;
+  background-color: var(--color-pine);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btnAdd:hover {
+  background-color: var(--color-evergreen);
+}
+
+.btnRemove {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-family: var(--font-family-headings);
+  font-weight: 600;
+  background-color: transparent;
+  color: #b33a3a;
+  border: 1.5px solid #b33a3a;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btnRemove:hover {
+  background-color: #b33a3a;
+  color: #fff;
+}
+
+/* ── Empty State ── */
+.emptyState {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--color-spruce);
+  font-family: var(--font-family-body);
+  font-size: 14px;
+}
+
+/* ── Three-Column Grid ── */
+.threeCol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ── Coming Soon Badge ── */
+.comingSoonBadge {
+  display: inline-block;
+  font-family: var(--font-family-headings);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: var(--color-slate);
+  color: var(--color-evergreen);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.placeholderText {
+  font-family: var(--font-family-body);
+  font-size: 13px;
+  color: var(--color-spruce);
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 968px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+
+  .threeCol {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsBar {
+    flex-wrap: wrap;
+  }
+
+  .metric {
+    flex: 1 1 50%;
+  }
+
+  .metric:nth-child(3)::before {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 16px;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .metricsBar {
+    flex-direction: column;
+  }
+
+  .metric {
+    flex: 1 1 100%;
+    padding: 14px 16px;
+  }
+
+  .metric + .metric::before {
+    left: 20%;
+    top: 0;
+    width: 60%;
+    height: 1px;
+  }
+
+  .inputGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .propertyItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .propertyActions {
+    margin-left: 0;
+  }
+}
