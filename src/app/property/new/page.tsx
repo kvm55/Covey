@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./new.module.css";
+import { createClient } from "@/utils/supabase";
 import {
   PropertyInputs,
   InvestmentType,
@@ -66,11 +67,59 @@ export default function NewPropertyPage() {
     updateField('loanAmount', Math.round(inputs.purchasePrice * 0.75));
   }, [inputs.purchasePrice, updateField]);
 
-  const handleSubmit = () => {
-    const id = `${inputs.state.toUpperCase() || 'XX'}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-    const dealData = { id, inputs, results, createdAt: new Date().toISOString() };
-    localStorage.setItem(`covey-deal-${id}`, JSON.stringify(dealData));
-    router.push(`/property/${id}`);
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async () => {
+    setSaving(true);
+    const supabase = createClient();
+
+    const { data, error } = await supabase
+      .from("properties")
+      .insert({
+        street_address: inputs.streetAddress,
+        city: inputs.city,
+        state: inputs.state,
+        zip: inputs.zip,
+        price: inputs.purchasePrice,
+        image_url: '',
+        cap_rate: results.capRate / 100,
+        irr: results.irr / 100,
+        equity_multiple: results.equityMultiple,
+        type: inputs.type,
+        bedrooms: inputs.bedrooms,
+        bathrooms: inputs.bathrooms,
+        square_feet: inputs.squareFeet,
+        renovations: inputs.renovations,
+        reserves: inputs.reserves,
+        debt_costs: inputs.closingCosts,
+        equity: results.totalEquityRequired,
+        ltc: results.loanToCost,
+        interest_rate: inputs.interestRate,
+        amortization: inputs.amortizationYears,
+        exit_cap_rate: inputs.exitCapRate,
+        net_sale_proceeds: results.netSaleProceeds,
+        profit_multiple: results.equityMultiple,
+        in_place_rent: inputs.type === 'Long Term Hold' ? inputs.grossMonthlyRent : 0,
+        stabilized_rent: inputs.type === 'Long Term Hold' ? inputs.grossMonthlyRent : 0,
+        noi_margin: results.noiMargin / 100,
+        dscr: results.dscr,
+        spread: 0,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error saving property:", error.message);
+      setSaving(false);
+      return;
+    }
+
+    // Also save full deal data to localStorage for the detail page
+    const dealData = { id: data.id, inputs, results, createdAt: new Date().toISOString() };
+    localStorage.setItem(`covey-deal-${data.id}`, JSON.stringify(dealData));
+
+    setSaving(false);
+    router.push(`/property/${data.id}`);
   };
 
   const sectionIndex = SECTIONS.findIndex(s => s.key === activeSection);
@@ -291,7 +340,7 @@ export default function NewPropertyPage() {
             <div className={styles.formNav}>
               <button className={styles.navButton} onClick={goPrev} disabled={isFirst}>← Previous</button>
               {isLast ? (
-                <button className={styles.submitButton} onClick={handleSubmit}>Save & View Deal Summary →</button>
+                <button className={styles.submitButton} onClick={handleSubmit} disabled={saving}>{saving ? 'Saving...' : 'Save & View Deal Summary →'}</button>
               ) : (
                 <button className={styles.navButton} onClick={goNext}>Next →</button>
               )}
