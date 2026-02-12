@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap');
+:root {
+  /* Covey / TUG Brand Colors */
+  --color-evergreen: #112521;
+  --color-pine: #103F31;
+  --color-summit: #475959;
+  --color-spruce: #7B8895;
+  --color-slate: #BFBDB2;
+
+  /* Global usage */
+  --color-background: var(--color-slate);
+  --color-text: var(--color-evergreen);
+
+  /* Fonts */
+  --font-family-body: 'Merriweather', serif;
+  --font-family-headings: 'Jura', sans-serif;
+}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-family-body);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-headings);
+  }
