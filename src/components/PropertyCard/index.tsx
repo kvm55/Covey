@@ -6,7 +6,7 @@ type PropertyCardProps = {
   state: string;
   zip: string;
   imageUrl: string;
-  type: "Fix & Flip" | "Long-Term Hold" | "Short-Term Rental";
+  type: string;
   bedrooms: number;
   bathrooms: number;
   squareFeet: number;

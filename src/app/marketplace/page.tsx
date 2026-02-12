@@ -8,7 +8,7 @@ import styles from "./Marketplace.module.css";
 import { properties } from "@/data/properties";
 
 export default function MarketplacePage() {
-  const [selectedType, setSelectedType] = useState("moderate");
+  const [selectedType, setSelectedType] = useState("All");
   const [filters, setFilters] = useState({
     bedrooms: { min: 0, max: 6 },
     bathrooms: { min: 0, max: 4 },
@@ -39,40 +39,41 @@ export default function MarketplacePage() {
         <div className={styles.cardGrid}>
           {properties.length > 0 ? (
             properties
-              .filter((property) =>
-                (selectedType === "All" || property.type === selectedType.replace(/-/g, " ")) &&
-                property.bedrooms <= filters.bedrooms.max &&
-                property.bathrooms <= filters.bathrooms.max &&
-                property.squareFeet <= filters.squareFeet.max &&
-                (property.capRate * 100) <= filters.capRate.max &&
-                (property.irr * 100) <= filters.irr.max &&
-                property.equityMultiple <= filters.equityMultiple.max
-              )
+              .filter((property) => {
+                const normalizedFilter = selectedType.toLowerCase().replace(/-/g, " ");
+                const normalizedType = property.type.toLowerCase();
+                return (
+                  (selectedType === "All" || normalizedType === normalizedFilter) &&
+                  property.bedrooms <= filters.bedrooms.max &&
+                  property.bathrooms <= filters.bathrooms.max &&
+                  property.squareFeet <= filters.squareFeet.max &&
+                  (property.capRate * 100) <= filters.capRate.max &&
+                  (property.irr * 100) <= filters.irr.max &&
+                  property.equityMultiple <= filters.equityMultiple.max
+                );
+              })
               .map((property) => {
                 const formattedCapRate = `${(property.capRate * 100).toFixed(1)}%`;
                 const formattedIrr = `${(property.irr * 100).toFixed(1)}%`;
                 const formattedEquityMultiple = `${property.equityMultiple.toFixed(1)}x`;
 
                 return (
-                  <PropertyCard
-                    key={property.id}
-                    streetAddress={
-                      <Link href={`/property/${property.id}`}>
-                        {property.streetAddress}
-                      </Link>
-                    }
-                    city={property.city}
-                    state={property.state}
-                    zip={property.zip}
-                    imageUrl={property.imageUrl || "https://via.placeholder.com/300x180"}
-                    type={property.type}
-                    bedrooms={property.bedrooms}
-                    bathrooms={property.bathrooms}
-                    squareFeet={property.squareFeet}
-                    irr={formattedIrr}
-                    capRate={formattedCapRate}
-                    equityMultiple={formattedEquityMultiple}
-                  />
+                  <Link key={property.id} href={`/property/${property.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <PropertyCard
+                      streetAddress={property.streetAddress}
+                      city={property.city}
+                      state={property.state}
+                      zip={property.zip}
+                      imageUrl={property.imageUrl || "https://via.placeholder.com/300x180"}
+                      type={property.type}
+                      bedrooms={property.bedrooms}
+                      bathrooms={property.bathrooms}
+                      squareFeet={property.squareFeet}
+                      irr={formattedIrr}
+                      capRate={formattedCapRate}
+                      equityMultiple={formattedEquityMultiple}
+                    />
+                  </Link>
                 );
               })
           ) : (
