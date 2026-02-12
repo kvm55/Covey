@@ -1,62 +1,196 @@
 .container {
-    padding: 32px;
-    box-sizing: border-box;
-  }
-  
-  .title {
-    font-family: var(--font-family-headings);
-    font-size: 24px;
-    margin-bottom: 16px;
-    color: var(--color-evergreen);
-  }
-  
-  .cardGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-    flex: 1;
-    box-sizing: border-box;
+  padding: 32px;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: 28px;
+  margin: 0 0 4px 0;
+  color: var(--color-evergreen);
+}
+
+.subtitle {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  margin: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 10px 14px;
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  border: 1.5px solid var(--color-slate);
+  border-radius: 6px;
+  background: #fafbfc;
+  color: var(--color-evergreen);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput::placeholder {
+  color: var(--color-spruce);
+}
+
+.searchInput:focus {
+  border-color: var(--color-pine);
+  box-shadow: 0 0 0 2px rgba(16, 63, 49, 0.12);
+}
+
+.sortSelect {
+  padding: 10px 14px;
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  border: 1.5px solid var(--color-slate);
+  border-radius: 6px;
+  background: #fafbfc;
+  color: var(--color-evergreen);
+  outline: none;
+  cursor: pointer;
+  min-width: 200px;
+  transition: border-color 0.2s ease;
+}
+
+.sortSelect:focus {
+  border-color: var(--color-pine);
+  box-shadow: 0 0 0 2px rgba(16, 63, 49, 0.12);
+}
+
+.mainContent {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  width: 280px;
+  flex: 0 0 280px;
+  box-sizing: border-box;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  flex: 1;
+  box-sizing: border-box;
+  align-content: start;
+}
+
+.noResults {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--color-summit);
+  font-family: var(--font-family-body);
+  font-size: 15px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  padding: 16px 0;
+}
+
+.pageButton {
+  padding: 8px 16px;
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  border: 1.5px solid var(--color-slate);
+  border-radius: 6px;
+  background: #fafbfc;
+  color: var(--color-evergreen);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: var(--color-pine);
+  color: white;
+  border-color: var(--color-pine);
+}
+
+.pageButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageNumber {
+  padding: 8px 14px;
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  border: 1.5px solid var(--color-slate);
+  border-radius: 6px;
+  background: #fafbfc;
+  color: var(--color-evergreen);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageNumber:hover {
+  border-color: var(--color-pine);
+}
+
+.pageNumberActive {
+  background: var(--color-pine);
+  color: white;
+  border-color: var(--color-pine);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .mainContent {
+    flex-direction: column;
   }
 
   .sidebar {
-    width: 300px;
-    padding: 16px;
-    background-color: var(--color-spruce);
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-    color: #2F4F4F;
-    flex: 0 0 300px;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
-    box-sizing: border-box;
-  }
-
-  .filterGroup {
-    margin-bottom: 24px;
-    display: block;
-  }
-
-  .filterLabel {
-    font-weight: bold;
-    margin-bottom: 8px;
-    display: block;
-    color: #fff;
-  }
-
-  .filterOption {
-    display: block;
-    margin: 4px 0;
-    padding: 8px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    color: var(--color-evergreen);
-    border-radius: 4px;
-  }
-
-  .mainContent {
-    display: flex;
-    gap: 24px;
     width: 100%;
-    box-sizing: border-box;
+    flex: none;
   }
+
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+  }
+
+  .sortSelect {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+}

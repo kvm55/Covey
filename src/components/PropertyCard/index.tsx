@@ -13,6 +13,7 @@ type PropertyCardProps = {
   irr: string;
   capRate: string;
   equityMultiple: string;
+  price?: string;
 };
 
 export default function PropertyCard({
@@ -28,6 +29,7 @@ export default function PropertyCard({
   irr,
   capRate,
   equityMultiple,
+  price,
 }: PropertyCardProps) {
   return (
     <div className={styles.card}>
@@ -37,6 +39,7 @@ export default function PropertyCard({
         className={styles.image}
       />
       <div className={styles.content}>
+        {price && <p className={styles.price}>{price}</p>}
         <div className={styles.metrics}>
           <div className={styles.metricItem}>
             <span className={styles.metricLabel}>IRR</span>

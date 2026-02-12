@@ -1,37 +1,22 @@
 .filterBar {
-    display: flex;
-    gap: 16px;
-    padding: 16px 32px;
-    background-color: #BFBDB2;
-    border-radius: 8px;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .button {
-    background: none;
-    border: 1px solid #112521;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-    color: #112521;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .button:hover {
-    background-color: #103F31;
-    color: white;
-  }
-  
-  .active {
-    background-color: #112521;
-    color: white;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.filterTitle {
+  font-family: var(--font-family-headings);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 4px 0;
+}
 
 .typeSection {
   display: flex;
@@ -39,46 +24,75 @@
   flex-wrap: wrap;
 }
 
+.button {
+  background: var(--color-slate);
+  border: none;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: var(--font-family-body);
+  color: var(--color-evergreen);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.button:hover {
+  background-color: var(--color-pine);
+  color: white;
+}
+
+.active {
+  background-color: var(--color-pine);
+  color: white;
+}
+
 .rangeSection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .rangeFilter {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .label {
-  font-size: 14px;
-  color: #112521;
-  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: var(--color-summit);
+  font-family: var(--font-family-body);
 }
 
 .rangeInput {
   width: 100%;
-  height: 8px;
-  background: #ddd;
+  height: 6px;
+  background: var(--color-slate);
   outline: none;
   -webkit-appearance: none;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .rangeInput::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
-  background: #112521;
+  background: var(--color-pine);
   border-radius: 50%;
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.rangeInput::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
 .rangeInput::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: #112521;
+  background: var(--color-pine);
   border-radius: 50%;
   cursor: pointer;
+  border: none;
 }
