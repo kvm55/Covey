@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { properties } from "@/data/properties";
+import { createClient } from "@/utils/supabase";
 import { PropertyInputs, UnderwritingResults, runUnderwriting, formatCurrency, formatPercent, formatMultiple } from "@/utils/underwriting";
 import styles from "./PropertyDetailPage.module.css";
 
@@ -14,26 +14,62 @@ interface DealData {
   createdAt: string;
 }
 
+interface SupabaseProperty {
+  id: string;
+  street_address: string;
+  city: string;
+  state: string;
+  zip: string;
+  price: number;
+  image_url: string;
+  cap_rate: number;
+  irr: number;
+  equity_multiple: number;
+  type: string;
+  bedrooms: number;
+  bathrooms: number;
+  square_feet: number;
+}
+
 export default function PropertyDetailPage() {
   const { id } = useParams();
   const [deal, setDeal] = useState<DealData | null>(null);
+  const [supabaseProperty, setSupabaseProperty] = useState<SupabaseProperty | null>(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'summary' | 'projections'>('summary');
 
-  // Check localStorage for underwritten deals
   useEffect(() => {
+    // Check localStorage for underwritten deals
     const stored = localStorage.getItem(`covey-deal-${id}`);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Re-run calculations to ensure freshness
       const results = runUnderwriting(parsed.inputs);
       setDeal({ ...parsed, results });
+      setLoading(false);
+      return;
     }
+
+    // Fetch from Supabase
+    async function fetchProperty() {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (!error && data) {
+        setSupabaseProperty(data);
+      }
+      setLoading(false);
+    }
+    fetchProperty();
   }, [id]);
 
-  // Fallback: check mock data
-  const mockProperty = properties.find((p) => p.id === id);
+  if (loading) {
+    return <div className={styles.container}><p>Loading property...</p></div>;
+  }
 
-  if (!deal && !mockProperty) {
+  if (!deal && !supabaseProperty) {
     return (
       <div className={styles.container}>
         <h1 className={styles.notFoundTitle}>Property Not Found</h1>
@@ -43,28 +79,28 @@ export default function PropertyDetailPage() {
     );
   }
 
-  // If it's a legacy mock property, show simple view
-  if (!deal && mockProperty) {
+  // Supabase property view
+  if (!deal && supabaseProperty) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
           <Link href="/marketplace" className={styles.backLink}>← Back to Marketplace</Link>
-          <h1 className={styles.title}>{mockProperty.streetAddress}</h1>
-          <p className={styles.subtitle}>{mockProperty.city}, {mockProperty.state} {mockProperty.zip}</p>
+          <h1 className={styles.title}>{supabaseProperty.street_address}</h1>
+          <p className={styles.subtitle}>{supabaseProperty.city}, {supabaseProperty.state} {supabaseProperty.zip}</p>
         </div>
         <div className={styles.metricsBar}>
-          <div className={styles.metricItem}><span className={styles.metricLabel}>Cap Rate</span><span className={styles.metricVal}>{(mockProperty.capRate * 100).toFixed(1)}%</span></div>
-          <div className={styles.metricItem}><span className={styles.metricLabel}>IRR</span><span className={styles.metricVal}>{(mockProperty.irr * 100).toFixed(1)}%</span></div>
-          <div className={styles.metricItem}><span className={styles.metricLabel}>Equity Multiple</span><span className={styles.metricVal}>{mockProperty.equityMultiple.toFixed(2)}x</span></div>
+          <div className={styles.metricItem}><span className={styles.metricLabel}>Cap Rate</span><span className={styles.metricVal}>{(supabaseProperty.cap_rate * 100).toFixed(1)}%</span></div>
+          <div className={styles.metricItem}><span className={styles.metricLabel}>IRR</span><span className={styles.metricVal}>{(supabaseProperty.irr * 100).toFixed(1)}%</span></div>
+          <div className={styles.metricItem}><span className={styles.metricLabel}>Equity Multiple</span><span className={styles.metricVal}>{supabaseProperty.equity_multiple.toFixed(2)}x</span></div>
         </div>
         <div className={styles.detailGrid}>
           <div className={styles.detailCard}>
             <h3>Property Details</h3>
-            <div className={styles.detailRow}><span>Type</span><strong>{mockProperty.type}</strong></div>
-            <div className={styles.detailRow}><span>Bedrooms</span><strong>{mockProperty.bedrooms}</strong></div>
-            <div className={styles.detailRow}><span>Bathrooms</span><strong>{mockProperty.bathrooms}</strong></div>
-            <div className={styles.detailRow}><span>Square Feet</span><strong>{mockProperty.squareFeet.toLocaleString()}</strong></div>
-            <div className={styles.detailRow}><span>Price</span><strong>${mockProperty.price.toLocaleString()}</strong></div>
+            <div className={styles.detailRow}><span>Type</span><strong>{supabaseProperty.type}</strong></div>
+            <div className={styles.detailRow}><span>Bedrooms</span><strong>{supabaseProperty.bedrooms}</strong></div>
+            <div className={styles.detailRow}><span>Bathrooms</span><strong>{supabaseProperty.bathrooms}</strong></div>
+            <div className={styles.detailRow}><span>Square Feet</span><strong>{supabaseProperty.square_feet.toLocaleString()}</strong></div>
+            <div className={styles.detailRow}><span>Price</span><strong>${supabaseProperty.price.toLocaleString()}</strong></div>
           </div>
         </div>
       </div>
