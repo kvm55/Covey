@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase";
+import styles from "./Dashboard.module.css";
 
 type Property = {
   id: string;
@@ -71,92 +72,152 @@ export default function DashboardPage() {
     );
   });
 
-  if (loading) return <main className="container"><p>Loading dashboard...</p></main>;
+  if (loading) {
+    return (
+      <main className={styles.page}>
+        <p>Loading dashboard...</p>
+      </main>
+    );
+  }
 
   return (
-    <main className="container">
-      <h1>Dashboard</h1>
+    <main className={styles.page}>
+      {/* Page Header */}
+      <header className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Investment Dashboard</h1>
+        <p className={styles.pageSubtitle}>Track your portfolio, set buy criteria, and discover matching properties.</p>
+      </header>
 
-      <section>
-        <h2>Portfolio Overview</h2>
-        <ul>
-          <li>Total Value: ${totalValue.toLocaleString()}</li>
-          <li>Average Cap Rate: {avgCapRate.toFixed(2)}%</li>
-          <li>Average IRR: {avgIrr.toFixed(2)}%</li>
-          <li>Average Equity Multiple: {avgEquityMultiple.toFixed(2)}x</li>
-        </ul>
-      </section>
-
-      <section>
-        <h2>Map</h2>
-        <div style={{ width: "100%", height: "300px", backgroundColor: "#eee", textAlign: "center", lineHeight: "300px" }}>
-          Map Placeholder
+      {/* Metrics Bar */}
+      <div className={styles.metricsBar}>
+        <div className={styles.metric}>
+          <span className={styles.metricValue}>${totalValue.toLocaleString()}</span>
+          <span className={styles.metricLabel}>Total Value</span>
         </div>
-      </section>
+        <div className={styles.metric}>
+          <span className={styles.metricValue}>{avgCapRate.toFixed(2)}%</span>
+          <span className={styles.metricLabel}>Avg Cap Rate</span>
+        </div>
+        <div className={styles.metric}>
+          <span className={styles.metricValue}>{avgIrr.toFixed(2)}%</span>
+          <span className={styles.metricLabel}>Avg IRR</span>
+        </div>
+        <div className={styles.metric}>
+          <span className={styles.metricValue}>{avgEquityMultiple.toFixed(2)}x</span>
+          <span className={styles.metricLabel}>Avg Equity Multiple</span>
+        </div>
+      </div>
 
-      <section>
-        <h2>Buy Box</h2>
-        <label>
-          Min Price: $
-          <input
-            type="number"
-            value={buyBox.minPrice}
-            onChange={(e) => setBuyBox({ ...buyBox, minPrice: parseInt(e.target.value) })}
-          />
-        </label>
-        <label>
-          Max Price: $
-          <input
-            type="number"
-            value={buyBox.maxPrice}
-            onChange={(e) => setBuyBox({ ...buyBox, maxPrice: parseInt(e.target.value) })}
-          />
-        </label>
-        <label>
-          Min Cap Rate (%):
-          <input
-            type="number"
-            value={buyBox.minCapRate}
-            onChange={(e) => setBuyBox({ ...buyBox, minCapRate: parseFloat(e.target.value) })}
-          />
-        </label>
-        <label>
-          Max Cap Rate (%):
-          <input
-            type="number"
-            value={buyBox.maxCapRate}
-            onChange={(e) => setBuyBox({ ...buyBox, maxCapRate: parseFloat(e.target.value) })}
-          />
-        </label>
-      </section>
+      {/* Two-Column Grid: Map + Buy Box | Matching Properties */}
+      <div className={styles.twoCol}>
+        {/* Left Column */}
+        <div>
+          {/* Map Card */}
+          <div className={styles.card} style={{ marginBottom: 24 }}>
+            <h2 className={styles.cardTitle}>Map</h2>
+            <div className={styles.mapPlaceholder}>Map Placeholder</div>
+          </div>
 
-      <section>
-        <h2>Matching Properties</h2>
-        <ul>
-          {filteredProperties.map((p) => (
-            <li key={p.id}>
-              {p.street_address}, {p.city} – ${p.price.toLocaleString()} – Cap Rate: {(p.cap_rate * 100).toFixed(2)}%
-              <button onClick={() => handleAddToPortfolio(p.id)}>Add</button>
-              <button onClick={() => handleRemoveFromPortfolio(p.id)}>Remove</button>
-            </li>
-          ))}
-        </ul>
-      </section>
+          {/* Buy Box Card */}
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>Buy Box</h2>
+            <div className={styles.inputGrid}>
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Min Price</label>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputPrefix}>$</span>
+                  <input
+                    className={styles.input}
+                    type="number"
+                    value={buyBox.minPrice}
+                    onChange={(e) => setBuyBox({ ...buyBox, minPrice: parseInt(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Max Price</label>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputPrefix}>$</span>
+                  <input
+                    className={styles.input}
+                    type="number"
+                    value={buyBox.maxPrice}
+                    onChange={(e) => setBuyBox({ ...buyBox, maxPrice: parseInt(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Min Cap Rate</label>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputPrefix}>%</span>
+                  <input
+                    className={styles.input}
+                    type="number"
+                    value={buyBox.minCapRate}
+                    onChange={(e) => setBuyBox({ ...buyBox, minCapRate: parseFloat(e.target.value) })}
+                  />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label className={styles.inputLabel}>Max Cap Rate</label>
+                <div className={styles.inputWrapper}>
+                  <span className={styles.inputPrefix}>%</span>
+                  <input
+                    className={styles.input}
+                    type="number"
+                    value={buyBox.maxCapRate}
+                    onChange={(e) => setBuyBox({ ...buyBox, maxCapRate: parseFloat(e.target.value) })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <section>
-        <h2>Property Breakdown</h2>
-        <p>Details and charts about property types and locations.</p>
-      </section>
+        {/* Right Column: Matching Properties */}
+        <div className={styles.card}>
+          <h2 className={styles.cardTitle}>Matching Properties</h2>
+          {filteredProperties.length === 0 ? (
+            <div className={styles.emptyState}>No properties match your current filters.</div>
+          ) : (
+            <ul className={styles.propertyList}>
+              {filteredProperties.map((p) => (
+                <li key={p.id} className={styles.propertyItem}>
+                  <div className={styles.propertyInfo}>
+                    <span className={styles.propertyName}>{p.street_address}</span>
+                    <span className={styles.propertyMeta}>
+                      {p.city}, {p.state} &middot; ${p.price.toLocaleString()} &middot; Cap Rate: {(p.cap_rate * 100).toFixed(2)}%
+                    </span>
+                  </div>
+                  <div className={styles.propertyActions}>
+                    <button className={styles.btnAdd} onClick={() => handleAddToPortfolio(p.id)}>Add</button>
+                    <button className={styles.btnRemove} onClick={() => handleRemoveFromPortfolio(p.id)}>Remove</button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
 
-      <section>
-        <h2>Sensitivity Analysis</h2>
-        <p>Interactive sensitivity analysis tools.</p>
-      </section>
-
-      <section>
-        <h2>Demographics</h2>
-        <p>Demographic data visualization.</p>
-      </section>
+      {/* Three-Column Grid: Placeholder Cards */}
+      <div className={styles.threeCol}>
+        <div className={styles.card}>
+          <span className={styles.comingSoonBadge}>Coming Soon</span>
+          <h2 className={styles.cardTitle}>Property Breakdown</h2>
+          <p className={styles.placeholderText}>Details and charts about property types and locations.</p>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.comingSoonBadge}>Coming Soon</span>
+          <h2 className={styles.cardTitle}>Sensitivity Analysis</h2>
+          <p className={styles.placeholderText}>Interactive sensitivity analysis tools.</p>
+        </div>
+        <div className={styles.card}>
+          <span className={styles.comingSoonBadge}>Coming Soon</span>
+          <h2 className={styles.cardTitle}>Demographics</h2>
+          <p className={styles.placeholderText}>Demographic data visualization.</p>
+        </div>
+      </div>
     </main>
   );
 }
