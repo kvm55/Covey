@@ -1,5 +1,6 @@
 import "@/styles/styles.css";
 import SiteLayout from "@/components/SiteLayout";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata = {
   title: "Covey – Real Estate Investing Platform",
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <SiteLayout>{children}</SiteLayout>
+        <AuthProvider>
+          <SiteLayout>{children}</SiteLayout>
+        </AuthProvider>
       </body>
     </html>
   );

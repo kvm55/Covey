@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import styles from "./header.module.css";
 
 const navLinks = [
@@ -13,6 +14,7 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
+  const { user, loading, signOut } = useAuth();
 
   return (
     <header className={styles.header}>
@@ -34,15 +36,29 @@ export default function Header() {
           ))}
         </nav>
         <div className={styles.cta}>
-          <Link href="/signin" className={styles.cta__link}>
-            Sign In
-          </Link>
-          <Link
-            href="/get-started"
-            className={`${styles.cta__link} ${styles["cta__link--primary"]}`}
-          >
-            Get Started
-          </Link>
+          {loading ? null : user ? (
+            <>
+              <span className={styles.cta__link}>{user.email}</span>
+              <button
+                onClick={signOut}
+                className={`${styles.cta__link} ${styles["cta__link--primary"]}`}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/signin" className={styles.cta__link}>
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className={`${styles.cta__link} ${styles["cta__link--primary"]}`}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
