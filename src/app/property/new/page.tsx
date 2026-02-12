@@ -1,90 +1,331 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./new.module.css";
+import {
+  PropertyInputs,
+  InvestmentType,
+  UnderwritingResults,
+  runUnderwriting,
+  getDefaultInputs,
+  formatCurrency,
+  formatPercent,
+  formatMultiple,
+} from "@/utils/underwriting";
+
+type FormSection = 'property' | 'acquisition' | 'debt' | 'income' | 'expenses' | 'disposition';
+
+const SECTIONS: { key: FormSection; label: string }[] = [
+  { key: 'property', label: 'Property Info' },
+  { key: 'acquisition', label: 'Acquisition' },
+  { key: 'debt', label: 'Debt Terms' },
+  { key: 'income', label: 'Income' },
+  { key: 'expenses', label: 'Expenses' },
+  { key: 'disposition', label: 'Exit Strategy' },
+];
+
+const INVESTMENT_TYPES: { value: InvestmentType; label: string; desc: string }[] = [
+  { value: 'Long Term Hold', label: 'Long Term Hold', desc: 'Buy & hold for rental income and appreciation' },
+  { value: 'Fix and Flip', label: 'Fix & Flip', desc: 'Renovate and sell for profit' },
+  { value: 'Short Term Rental', label: 'Short Term Rental', desc: 'Airbnb / VRBO vacation rental' },
+];
 
 export default function NewPropertyPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    id: "",
-    streetAddress: "",
-    city: "",
-    state: "",
-    zip: "",
-    price: "",
-    units: "",
-    type: "Long Term Hold",
-    renovations: "",
-    reserves: "",
-    debtCosts: "",
-    equity: "",
-    ltc: "",
-    interestRate: "",
-    amortization: "",
-    exitCapRate: "",
-    inPlaceRent: "",
-    stabilizedRent: "",
-    vacancy: "",
-    noiMargin: "",
-    dscr: "",
-    spread: "",
-  });
+  const [activeSection, setActiveSection] = useState<FormSection>('property');
+  const [inputs, setInputs] = useState<PropertyInputs>(getDefaultInputs('Long Term Hold'));
 
-  const generateId = () => {
-    const stateCode = form.state.toUpperCase();
-    const random = Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, "0");
-    return `${stateCode}-${random}`;
+  const results: UnderwritingResults = useMemo(() => runUnderwriting(inputs), [inputs]);
+
+  const updateField = useCallback(<K extends keyof PropertyInputs>(field: K, value: PropertyInputs[K]) => {
+    setInputs(prev => ({ ...prev, [field]: value }));
+  }, []);
+
+  const handleTypeChange = useCallback((type: InvestmentType) => {
+    setInputs(prev => ({
+      ...getDefaultInputs(type),
+      streetAddress: prev.streetAddress, city: prev.city, state: prev.state, zip: prev.zip,
+      bedrooms: prev.bedrooms, bathrooms: prev.bathrooms, squareFeet: prev.squareFeet,
+      units: prev.units, purchasePrice: prev.purchasePrice,
+    }));
+  }, []);
+
+  const handleNumericChange = useCallback((field: keyof PropertyInputs) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    if (raw === '' || raw === '-') { updateField(field, 0 as any); return; }
+    const value = parseFloat(raw);
+    if (!isNaN(value)) updateField(field, value as any);
+  }, [updateField]);
+
+  const handleStringChange = useCallback((field: keyof PropertyInputs) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    updateField(field, e.target.value as any);
+  }, [updateField]);
+
+  const autoCalcLoan = useCallback(() => {
+    updateField('loanAmount', Math.round(inputs.purchasePrice * 0.75));
+  }, [inputs.purchasePrice, updateField]);
+
+  const handleSubmit = () => {
+    const id = `${inputs.state.toUpperCase() || 'XX'}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+    const dealData = { id, inputs, results, createdAt: new Date().toISOString() };
+    localStorage.setItem(`covey-deal-${id}`, JSON.stringify(dealData));
+    router.push(`/property/${id}`);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const sectionIndex = SECTIONS.findIndex(s => s.key === activeSection);
+  const isFirst = sectionIndex === 0;
+  const isLast = sectionIndex === SECTIONS.length - 1;
+  const goNext = () => { if (!isLast) setActiveSection(SECTIONS[sectionIndex + 1].key); };
+  const goPrev = () => { if (!isFirst) setActiveSection(SECTIONS[sectionIndex - 1].key); };
+  const hasInputs = inputs.purchasePrice > 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const newId = generateId();
-    setForm((prev) => ({ ...prev, id: newId }));
-    console.log("Created property:", { ...form, id: newId });
-    alert(`New property created with ID: ${newId}`);
-    router.push("/marketplace");
-  };
+  const renderField = (label: string, field: keyof PropertyInputs, opts: { prefix?: string; suffix?: string; step?: string; placeholder?: string; type?: string } = {}) => (
+    <div className={styles.field}>
+      <label className={styles.label}>{label}</label>
+      {opts.prefix || opts.suffix ? (
+        <div className={opts.prefix ? styles.inputWithPrefix : styles.inputWithSuffix}>
+          {opts.prefix && <span className={styles.prefix}>{opts.prefix}</span>}
+          <input className={styles.input} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} />
+          {opts.suffix && <span className={styles.suffix}>{opts.suffix}</span>}
+        </div>
+      ) : (
+        <input className={styles.input} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} />
+      )}
+    </div>
+  );
 
   return (
-    <div style={{ padding: "32px", maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Create New Property</h1>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <input name="streetAddress" placeholder="Street Address" value={form.streetAddress} onChange={handleChange} required />
-        <input name="city" placeholder="City" value={form.city} onChange={handleChange} required />
-        <input name="state" placeholder="State" value={form.state} onChange={handleChange} required />
-        <input name="zip" placeholder="Zip" value={form.zip} onChange={handleChange} required />
-        <input name="price" placeholder="Price" type="number" value={form.price} onChange={handleChange} required />
-        <input name="units" placeholder="Units" type="number" value={form.units} onChange={handleChange} required />
-        <select name="type" value={form.type} onChange={handleChange}>
-          <option value="Long Term Hold">Long Term Hold</option>
-          <option value="Fix and Flip">Fix and Flip</option>
-          <option value="Short Term Rental">Short Term Rental</option>
-        </select>
-        <input name="renovations" placeholder="Renovations" type="number" value={form.renovations} onChange={handleChange} />
-        <input name="reserves" placeholder="Reserves" type="number" value={form.reserves} onChange={handleChange} />
-        <input name="debtCosts" placeholder="Debt Costs" type="number" value={form.debtCosts} onChange={handleChange} />
-        <input name="equity" placeholder="Equity" type="number" value={form.equity} onChange={handleChange} />
-        <input name="ltc" placeholder="LTC" type="number" value={form.ltc} onChange={handleChange} />
-        <input name="interestRate" placeholder="Interest Rate" type="number" step="0.01" value={form.interestRate} onChange={handleChange} />
-        <input name="amortization" placeholder="Amortization" type="number" value={form.amortization} onChange={handleChange} />
-        <input name="exitCapRate" placeholder="Exit Cap Rate" type="number" step="0.01" value={form.exitCapRate} onChange={handleChange} />
-        <input name="inPlaceRent" placeholder="In Place Rent" type="number" value={form.inPlaceRent} onChange={handleChange} />
-        <input name="stabilizedRent" placeholder="Stabilized Rent" type="number" value={form.stabilizedRent} onChange={handleChange} />
-        <input name="vacancy" placeholder="Vacancy" type="number" step="0.01" value={form.vacancy} onChange={handleChange} />
-        <input name="noiMargin" placeholder="NOI Margin" type="number" step="0.01" value={form.noiMargin} onChange={handleChange} />
-        <input name="dscr" placeholder="DSCR" type="number" step="0.01" value={form.dscr} onChange={handleChange} />
-        <input name="spread" placeholder="Spread" type="number" step="0.01" value={form.spread} onChange={handleChange} />
-        <button type="submit">Create Property</button>
-      </form>
+    <div className={styles.pageWrapper}>
+      <div className={styles.pageHeader}>
+        <h1 className={styles.pageTitle}>Underwrite a Deal</h1>
+        <p className={styles.pageSubtitle}>Enter deal terms to analyze returns across all scenarios.</p>
+      </div>
+
+      <div className={styles.typeSelector}>
+        {INVESTMENT_TYPES.map(t => (
+          <button key={t.value} className={`${styles.typeButton} ${inputs.type === t.value ? styles.typeButtonActive : ''}`} onClick={() => handleTypeChange(t.value)}>
+            <span className={styles.typeLabel}>{t.label}</span>
+            <span className={styles.typeDesc}>{t.desc}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className={styles.mainLayout}>
+        <div className={styles.formPanel}>
+          <div className={styles.sectionNav}>
+            {SECTIONS.map((s, i) => (
+              <button key={s.key} className={`${styles.sectionTab} ${activeSection === s.key ? styles.sectionTabActive : ''} ${i < sectionIndex ? styles.sectionTabCompleted : ''}`} onClick={() => setActiveSection(s.key)}>
+                <span className={styles.sectionNumber}>{i + 1}</span>
+                <span className={styles.sectionLabel}>{s.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.formContent}>
+            {/* PROPERTY INFO */}
+            {activeSection === 'property' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Property Information</h2>
+                <div className={styles.fieldGrid}>
+                  <div className={styles.fieldFull}>
+                    <label className={styles.label}>Street Address</label>
+                    <input className={styles.input} value={inputs.streetAddress} onChange={handleStringChange('streetAddress')} placeholder="123 Main St" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>City</label>
+                    <input className={styles.input} value={inputs.city} onChange={handleStringChange('city')} placeholder="Atlanta" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>State</label>
+                    <input className={styles.input} value={inputs.state} onChange={handleStringChange('state')} placeholder="GA" maxLength={2} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>ZIP</label>
+                    <input className={styles.input} value={inputs.zip} onChange={handleStringChange('zip')} placeholder="30318" />
+                  </div>
+                  {renderField('Bedrooms', 'bedrooms')}
+                  {renderField('Bathrooms', 'bathrooms')}
+                  {renderField('Square Feet', 'squareFeet')}
+                  {renderField('Units', 'units')}
+                </div>
+              </div>
+            )}
+
+            {/* ACQUISITION */}
+            {activeSection === 'acquisition' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Sources & Uses</h2>
+                <div className={styles.fieldGrid}>
+                  {renderField('Purchase Price', 'purchasePrice', { prefix: '$', placeholder: '325000' })}
+                  {renderField('Closing Costs', 'closingCosts', { prefix: '$' })}
+                  {renderField('Renovations', 'renovations', { prefix: '$' })}
+                  {renderField('Reserves', 'reserves', { prefix: '$' })}
+                  {inputs.type === 'Fix and Flip' && renderField('After Repair Value (ARV)', 'afterRepairValue', { prefix: '$' })}
+                </div>
+                {inputs.purchasePrice > 0 && (
+                  <div className={styles.computedRow}><span>Total Project Cost</span><strong>{formatCurrency(results.totalProjectCost)}</strong></div>
+                )}
+              </div>
+            )}
+
+            {/* DEBT */}
+            {activeSection === 'debt' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Debt Terms</h2>
+                <div className={styles.fieldGrid}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>
+                      Loan Amount
+                      {inputs.purchasePrice > 0 && <button className={styles.autoCalc} onClick={autoCalcLoan}>Auto 75% LTV</button>}
+                    </label>
+                    <div className={styles.inputWithPrefix}>
+                      <span className={styles.prefix}>$</span>
+                      <input className={styles.input} type="number" value={inputs.loanAmount || ''} onChange={handleNumericChange('loanAmount')} />
+                    </div>
+                  </div>
+                  {renderField('Interest Rate', 'interestRate', { suffix: '%', step: '0.1' })}
+                  {renderField('Loan Term', 'loanTermYears', { suffix: 'yrs' })}
+                  {renderField('Amortization', 'amortizationYears', { suffix: 'yrs' })}
+                  <div className={styles.fieldFull}>
+                    <label className={styles.checkboxLabel}>
+                      <input type="checkbox" checked={inputs.interestOnly} onChange={(e) => updateField('interestOnly', e.target.checked)} />
+                      Interest Only
+                    </label>
+                  </div>
+                </div>
+                {inputs.loanAmount > 0 && (
+                  <div className={styles.computedGroup}>
+                    <div className={styles.computedRow}><span>Monthly Payment</span><strong>{formatCurrency(results.monthlyDebtService)}</strong></div>
+                    <div className={styles.computedRow}><span>Annual Debt Service</span><strong>{formatCurrency(results.annualDebtService)}</strong></div>
+                    <div className={styles.computedRow}><span>Equity Required</span><strong>{formatCurrency(results.totalEquityRequired)}</strong></div>
+                    <div className={styles.computedRow}><span>LTV / LTC</span><strong>{formatPercent(results.loanToValue)} / {formatPercent(results.loanToCost)}</strong></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* INCOME */}
+            {activeSection === 'income' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>
+                  {inputs.type === 'Short Term Rental' ? 'STR Revenue' : inputs.type === 'Fix and Flip' ? 'Project Timeline' : 'Rental Income'}
+                </h2>
+                <div className={styles.fieldGrid}>
+                  {inputs.type === 'Short Term Rental' && (<>
+                    {renderField('Avg Nightly Rate', 'avgNightlyRate', { prefix: '$' })}
+                    {renderField('Occupancy Rate', 'occupancyRate', { suffix: '%' })}
+                    {renderField('Cleaning Fee / Stay', 'cleaningFeePerStay', { prefix: '$' })}
+                    {renderField('Avg Stay Duration', 'avgStayDuration', { suffix: 'nights' })}
+                  </>)}
+                  {inputs.type === 'Fix and Flip' && (<>
+                    {renderField('Months to Complete', 'monthsToComplete')}
+                    {renderField('Monthly Holding Costs', 'holdingCostsMonthly', { prefix: '$' })}
+                  </>)}
+                  {inputs.type === 'Long Term Hold' && (<>
+                    {renderField('Gross Monthly Rent', 'grossMonthlyRent', { prefix: '$' })}
+                    {renderField('Other Monthly Income', 'otherMonthlyIncome', { prefix: '$' })}
+                    {renderField('Vacancy Rate', 'vacancyRate', { suffix: '%', step: '0.5' })}
+                  </>)}
+                </div>
+                {hasInputs && inputs.type !== 'Fix and Flip' && (
+                  <div className={styles.computedGroup}>
+                    <div className={styles.computedRow}><span>Gross Scheduled Income</span><strong>{formatCurrency(results.grossScheduledIncome)}</strong></div>
+                    <div className={styles.computedRow}><span>Effective Gross Income</span><strong>{formatCurrency(results.effectiveGrossIncome)}</strong></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* EXPENSES */}
+            {activeSection === 'expenses' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>Operating Expenses</h2>
+                <p className={styles.sectionHint}>All values are annual amounts.</p>
+                <div className={styles.fieldGrid}>
+                  {renderField('Property Taxes', 'propertyTaxes', { prefix: '$' })}
+                  {renderField('Insurance', 'insurance', { prefix: '$' })}
+                  {renderField('Maintenance / Repairs', 'maintenance', { prefix: '$' })}
+                  {inputs.type === 'Short Term Rental' ? (<>
+                    {renderField('Platform Fee', 'strPlatformFee', { suffix: '%', step: '0.5' })}
+                    {renderField('STR Management', 'strManagement', { suffix: '%', step: '0.5' })}
+                  </>) : (
+                    renderField('Property Management', 'management', { prefix: '$' })
+                  )}
+                  {renderField('Utilities', 'utilities', { prefix: '$' })}
+                  {renderField('Other Expenses', 'otherExpenses', { prefix: '$' })}
+                </div>
+                {hasInputs && (
+                  <div className={styles.computedGroup}>
+                    <div className={styles.computedRow}><span>Total Operating Expenses</span><strong>{formatCurrency(results.totalOperatingExpenses)}</strong></div>
+                    <div className={styles.computedRow}><span>Expense Ratio</span><strong>{formatPercent(results.expenseRatio)}</strong></div>
+                    <div className={styles.computedRow}><span>NOI</span><strong className={results.noi >= 0 ? styles.positive : styles.negative}>{formatCurrency(results.noi)}</strong></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* DISPOSITION */}
+            {activeSection === 'disposition' && (
+              <div className={styles.section}>
+                <h2 className={styles.sectionTitle}>{inputs.type === 'Fix and Flip' ? 'Sale Strategy' : 'Exit Strategy'}</h2>
+                <div className={styles.fieldGrid}>
+                  {inputs.type !== 'Fix and Flip' && (<>
+                    {renderField('Hold Period', 'holdPeriodYears', { suffix: 'yrs' })}
+                    {renderField('Annual Appreciation', 'annualAppreciation', { suffix: '%', step: '0.5' })}
+                    {renderField('Annual Rent Growth', 'annualRentGrowth', { suffix: '%', step: '0.5' })}
+                    {renderField('Exit Cap Rate', 'exitCapRate', { suffix: '%', step: '0.25' })}
+                  </>)}
+                  {renderField('Selling Costs', 'sellingCosts', { suffix: '%', step: '0.5' })}
+                </div>
+                {hasInputs && (
+                  <div className={styles.computedGroup}>
+                    <div className={styles.computedRow}><span>Projected Sale Price</span><strong>{formatCurrency(results.projectedSalePrice)}</strong></div>
+                    <div className={styles.computedRow}><span>Net Sale Proceeds</span><strong className={results.netSaleProceeds >= 0 ? styles.positive : styles.negative}>{formatCurrency(results.netSaleProceeds)}</strong></div>
+                    <div className={styles.computedRow}><span>Total Profit</span><strong className={results.totalProfit >= 0 ? styles.positive : styles.negative}>{formatCurrency(results.totalProfit)}</strong></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className={styles.formNav}>
+              <button className={styles.navButton} onClick={goPrev} disabled={isFirst}>← Previous</button>
+              {isLast ? (
+                <button className={styles.submitButton} onClick={handleSubmit}>Save & View Deal Summary →</button>
+              ) : (
+                <button className={styles.navButton} onClick={goNext}>Next →</button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* LIVE METRICS SIDEBAR */}
+        <div className={styles.metricsPanel}>
+          <h3 className={styles.metricsTitle}>Live Returns</h3>
+          {!hasInputs ? (
+            <p className={styles.metricsHint}>Enter a purchase price to see live calculations.</p>
+          ) : (<>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>IRR</span><span className={`${styles.metricValue} ${styles.metricLarge}`}>{formatPercent(results.irr)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>Cash-on-Cash</span><span className={`${styles.metricValue} ${styles.metricLarge}`}>{formatPercent(results.cashOnCash)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>Cap Rate</span><span className={styles.metricValue}>{formatPercent(results.capRate)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>Equity Multiple</span><span className={styles.metricValue}>{formatMultiple(results.equityMultiple)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>DSCR</span><span className={`${styles.metricValue} ${results.dscr < 1.2 && results.dscr > 0 ? styles.warning : ''}`}>{results.dscr.toFixed(2)}x</span></div>
+            <div className={styles.metricDivider} />
+            <div className={styles.metricCard}><span className={styles.metricLabel}>NOI</span><span className={`${styles.metricValue} ${results.noi < 0 ? styles.negative : ''}`}>{formatCurrency(results.noi)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>Monthly Cash Flow</span><span className={`${styles.metricValue} ${results.monthlyCashFlow < 0 ? styles.negative : ''}`}>{formatCurrency(results.monthlyCashFlow)}</span></div>
+            <div className={styles.metricCard}><span className={styles.metricLabel}>Total Equity Required</span><span className={styles.metricValue}>{formatCurrency(results.totalEquityRequired)}</span></div>
+            {inputs.type === 'Fix and Flip' && results.flipProfit !== undefined && (<>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricCard}><span className={styles.metricLabel}>Flip Profit</span><span className={`${styles.metricValue} ${(results.flipProfit || 0) < 0 ? styles.negative : styles.positive}`}>{formatCurrency(results.flipProfit || 0)}</span></div>
+              <div className={styles.metricCard}><span className={styles.metricLabel}>Flip ROI</span><span className={styles.metricValue}>{formatPercent(results.flipROI || 0)}</span></div>
+            </>)}
+            {inputs.type === 'Short Term Rental' && results.revenuePerAvailableNight !== undefined && (<>
+              <div className={styles.metricDivider} />
+              <div className={styles.metricCard}><span className={styles.metricLabel}>RevPAN</span><span className={styles.metricValue}>{formatCurrency(results.revenuePerAvailableNight)}</span></div>
+            </>)}
+          </>)}
+        </div>
+      </div>
     </div>
   );
 }
