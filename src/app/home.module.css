@@ -1,0 +1,274 @@
+/* ─── Hero ─── */
+.hero {
+  background-color: var(--color-evergreen);
+  padding: 96px 32px;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.heroTitle {
+  font-family: var(--font-family-headings);
+  font-size: 48px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px;
+}
+
+.heroSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 18px;
+  color: var(--color-slate);
+  margin: 0 0 32px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  background-color: var(--color-slate);
+  color: var(--color-evergreen);
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btnSecondary {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  background-color: transparent;
+  color: var(--color-slate);
+  border: 2px solid var(--color-slate);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.btnSecondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Features ─── */
+.features {
+  background-color: var(--color-slate);
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-headings);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 48px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.featureCard {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 32px 24px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.featureIcon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.featureTitle {
+  font-family: var(--font-family-headings);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 8px;
+}
+
+.featureDesc {
+  font-family: var(--font-family-body);
+  font-size: 15px;
+  color: var(--color-summit);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── How It Works ─── */
+.howItWorks {
+  background-color: #ffffff;
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--color-evergreen);
+  color: #ffffff;
+  font-family: var(--font-family-headings);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.stepTitle {
+  font-family: var(--font-family-headings);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 8px;
+}
+
+.stepDesc {
+  font-family: var(--font-family-body);
+  font-size: 15px;
+  color: var(--color-summit);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ─── Featured Properties ─── */
+.featuredProps {
+  background-color: var(--color-slate);
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.propsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1080px;
+  margin: 0 auto 32px;
+}
+
+.viewAll {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  background-color: transparent;
+  color: var(--color-evergreen);
+  border: 2px solid var(--color-evergreen);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.viewAll:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ─── Final CTA ─── */
+.cta {
+  background-color: var(--color-evergreen);
+  padding: 80px 32px;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-family: var(--font-family-headings);
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px;
+}
+
+.ctaSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 18px;
+  color: var(--color-slate);
+  margin: 0 0 32px;
+}
+
+/* ─── Section title variant for white text ─── */
+.sectionTitleWhite {
+  font-family: var(--font-family-headings);
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 48px;
+}
+
+/* ─── Responsive: < 968px ─── */
+@media (max-width: 968px) {
+  .heroTitle {
+    font-size: 40px;
+  }
+
+  .grid,
+  .propsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ─── Responsive: < 600px ─── */
+@media (max-width: 600px) {
+  .hero,
+  .features,
+  .howItWorks,
+  .featuredProps,
+  .cta {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .heroTitle {
+    font-size: 32px;
+  }
+
+  .ctaTitle {
+    font-size: 24px;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .grid,
+  .propsGrid {
+    grid-template-columns: 1fr;
+  }
+}
