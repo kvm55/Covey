@@ -15,6 +15,7 @@ import {
   formatMultiple,
 } from "@/utils/underwriting";
 import { FUNDS, getFundForStrategy } from "@/data/funds";
+import { createScenario, toStrategyType } from "@/utils/scenarios";
 
 type FormSection = 'property' | 'acquisition' | 'debt' | 'income' | 'expenses' | 'disposition';
 
@@ -28,7 +29,7 @@ const SECTIONS: { key: FormSection; label: string }[] = [
 ];
 
 const INVESTMENT_TYPES: { value: InvestmentType; label: string; desc: string }[] = [
-  { value: 'Long Term Hold', label: 'Long Term Hold', desc: 'Buy & hold for rental income and appreciation' },
+  { value: 'Long Term Rental', label: 'Long Term Rental', desc: 'Buy & hold for rental income and appreciation' },
   { value: 'Fix and Flip', label: 'Fix & Flip', desc: 'Renovate and sell for profit' },
   { value: 'Short Term Rental', label: 'Short Term Rental', desc: 'Airbnb / VRBO vacation rental' },
 ];
@@ -36,7 +37,7 @@ const INVESTMENT_TYPES: { value: InvestmentType; label: string; desc: string }[]
 export default function NewPropertyPage() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState<FormSection>('property');
-  const [inputs, setInputs] = useState<PropertyInputs>(getDefaultInputs('Long Term Hold'));
+  const [inputs, setInputs] = useState<PropertyInputs>(getDefaultInputs('Long Term Rental'));
 
   const results: UnderwritingResults = useMemo(() => runUnderwriting(inputs), [inputs]);
 
@@ -101,8 +102,8 @@ export default function NewPropertyPage() {
         exit_cap_rate: inputs.exitCapRate,
         net_sale_proceeds: results.netSaleProceeds,
         profit_multiple: results.equityMultiple,
-        in_place_rent: inputs.type === 'Long Term Hold' ? inputs.grossMonthlyRent : 0,
-        stabilized_rent: inputs.type === 'Long Term Hold' ? inputs.grossMonthlyRent : 0,
+        in_place_rent: inputs.type === 'Long Term Rental' ? inputs.grossMonthlyRent : 0,
+        stabilized_rent: inputs.type === 'Long Term Rental' ? inputs.grossMonthlyRent : 0,
         noi_margin: results.noiMargin / 100,
         dscr: results.dscr,
         spread: 0,
@@ -116,9 +117,14 @@ export default function NewPropertyPage() {
       return;
     }
 
-    // Also save full deal data to localStorage for the detail page
-    const dealData = { id: data.id, inputs, results, createdAt: new Date().toISOString() };
-    localStorage.setItem(`covey-deal-${data.id}`, JSON.stringify(dealData));
+    // Save as primary scenario in Supabase
+    await createScenario({
+      propertyId: data.id,
+      strategyType: toStrategyType(inputs.type),
+      inputs,
+      results,
+      isPrimary: true,
+    });
 
     setSaving(false);
     router.push(`/property/${data.id}`);
@@ -279,7 +285,7 @@ export default function NewPropertyPage() {
                     {renderField('Months to Complete', 'monthsToComplete')}
                     {renderField('Monthly Holding Costs', 'holdingCostsMonthly', { prefix: '$' })}
                   </>)}
-                  {inputs.type === 'Long Term Hold' && (<>
+                  {inputs.type === 'Long Term Rental' && (<>
                     {renderField('Gross Monthly Rent', 'grossMonthlyRent', { prefix: '$' })}
                     {renderField('Other Monthly Income', 'otherMonthlyIncome', { prefix: '$' })}
                     {renderField('Vacancy Rate', 'vacancyRate', { suffix: '%', step: '0.5' })}

@@ -1,20 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase";
 import { PropertyInputs, UnderwritingResults, runUnderwriting, formatCurrency, formatPercent, formatMultiple } from "@/utils/underwriting";
 import { FUNDS, getFundForStrategy } from "@/data/funds";
 import type { FundStrategy } from "@/data/funds";
+import type { UnderwritingScenarioRow } from "@/types/underwriting";
+import { fetchScenarios, createScenario, promoteScenario, deleteScenario, toStrategyType } from "@/utils/scenarios";
+import ScenarioList from "@/components/ScenarioList/ScenarioList";
 import styles from "./PropertyDetailPage.module.css";
-
-interface DealData {
-  id: string;
-  inputs: PropertyInputs;
-  results: UnderwritingResults;
-  createdAt: string;
-}
 
 interface SupabaseProperty {
   id: string;
@@ -34,45 +30,135 @@ interface SupabaseProperty {
   fund_strategy: FundStrategy | null;
 }
 
+type TabKey = 'summary' | 'projections' | 'scenarios';
+
 export default function PropertyDetailPage() {
   const { id } = useParams();
-  const [deal, setDeal] = useState<DealData | null>(null);
+  const [scenarios, setScenarios] = useState<UnderwritingScenarioRow[]>([]);
+  const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   const [supabaseProperty, setSupabaseProperty] = useState<SupabaseProperty | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'summary' | 'projections'>('summary');
+  const [activeTab, setActiveTab] = useState<TabKey>('summary');
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [compareMode, setCompareMode] = useState(false);
 
+  // ── Load data ────────────────────────────────────────────────
   useEffect(() => {
-    // Check localStorage for underwritten deals
-    const stored = localStorage.getItem(`covey-deal-${id}`);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      const results = runUnderwriting(parsed.inputs);
-      setDeal({ ...parsed, results });
-      setLoading(false);
-      return;
-    }
+    async function loadData() {
+      const propertyId = id as string;
 
-    // Fetch from Supabase
-    async function fetchProperty() {
+      // 1. Try scenarios table
+      const scenarioRows = await fetchScenarios(propertyId);
+
+      if (scenarioRows.length > 0) {
+        setScenarios(scenarioRows);
+        const primary = scenarioRows.find(s => s.is_primary) || scenarioRows[0];
+        setActiveScenarioId(primary.id);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Check localStorage for backward compat migration
+      const stored = localStorage.getItem(`covey-deal-${propertyId}`);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const inputs = parsed.inputs as PropertyInputs;
+          const results = runUnderwriting(inputs);
+
+          const newScenario = await createScenario({
+            propertyId,
+            strategyType: toStrategyType(inputs.type),
+            inputs,
+            results,
+            isPrimary: true,
+          });
+
+          if (newScenario) {
+            setScenarios([newScenario]);
+            setActiveScenarioId(newScenario.id);
+            localStorage.removeItem(`covey-deal-${propertyId}`);
+          }
+          setLoading(false);
+          return;
+        } catch {
+          // Fall through to supabase property
+        }
+      }
+
+      // 3. Fall back to bare properties row (seed data)
       const supabase = createClient();
       const { data, error } = await supabase
         .from("properties")
         .select("*")
-        .eq("id", id)
+        .eq("id", propertyId)
         .single();
       if (!error && data) {
         setSupabaseProperty(data);
       }
       setLoading(false);
     }
-    fetchProperty();
+
+    loadData();
   }, [id]);
 
+  // ── Scenario actions ────────────────────────────────────────
+  const reloadScenarios = useCallback(async () => {
+    const rows = await fetchScenarios(id as string);
+    setScenarios(rows);
+    // Keep active selection if still valid, else pick primary
+    if (!rows.find(s => s.id === activeScenarioId)) {
+      const primary = rows.find(s => s.is_primary) || rows[0];
+      setActiveScenarioId(primary?.id ?? null);
+    }
+  }, [id, activeScenarioId]);
+
+  const handlePromote = useCallback(async (scenarioId: string) => {
+    await promoteScenario(scenarioId);
+    await reloadScenarios();
+  }, [reloadScenarios]);
+
+  const handleDelete = useCallback(async (scenarioId: string) => {
+    await deleteScenario(scenarioId);
+    await reloadScenarios();
+  }, [reloadScenarios]);
+
+  const handleNewScenario = useCallback(async () => {
+    const active = scenarios.find(s => s.id === activeScenarioId);
+    if (!active) return;
+
+    const count = scenarios.length + 1;
+    const newScenario = await createScenario({
+      propertyId: id as string,
+      name: `Scenario ${count}`,
+      strategyType: active.strategy_type,
+      inputs: active.inputs,
+      results: active.results,
+      isPrimary: false,
+    });
+
+    if (newScenario) {
+      await reloadScenarios();
+      setActiveScenarioId(newScenario.id);
+      setActiveTab('scenarios');
+    }
+  }, [id, scenarios, activeScenarioId, reloadScenarios]);
+
+  const toggleCompare = useCallback((scenarioId: string) => {
+    setCompareIds(prev => {
+      if (prev.includes(scenarioId)) return prev.filter(id => id !== scenarioId);
+      if (prev.length >= 3) return prev;
+      return [...prev, scenarioId];
+    });
+  }, []);
+
+  // ── Loading state ────────────────────────────────────────────
   if (loading) {
     return <div className={styles.container}><p>Loading property...</p></div>;
   }
 
-  if (!deal && !supabaseProperty) {
+  // ── Not found ────────────────────────────────────────────────
+  if (scenarios.length === 0 && !supabaseProperty) {
     return (
       <div className={styles.container}>
         <h1 className={styles.notFoundTitle}>Property Not Found</h1>
@@ -82,8 +168,8 @@ export default function PropertyDetailPage() {
     );
   }
 
-  // Supabase property view
-  if (!deal && supabaseProperty) {
+  // ── Supabase-only property view (seed data, no scenarios) ───
+  if (scenarios.length === 0 && supabaseProperty) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
@@ -121,13 +207,17 @@ export default function PropertyDetailPage() {
     );
   }
 
-  // Full underwritten deal view
-  const { inputs: inp, results: res } = deal!;
+  // ── Full scenario-backed view ───────────────────────────────
+  const activeScenario = scenarios.find(s => s.id === activeScenarioId) || scenarios[0];
+  const inp = activeScenario.inputs as PropertyInputs;
+  const res = activeScenario.results as UnderwritingResults;
+
+  const compareScenarios = scenarios.filter(s => compareIds.includes(s.id));
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <Link href="/property/new" className={styles.backLink}>← Back to Underwriting</Link>
+        <Link href="/marketplace" className={styles.backLink}>← Back to Marketplace</Link>
         <div className={styles.headerTop}>
           <div>
             <h1 className={styles.title}>{inp.streetAddress || 'Untitled Deal'}</h1>
@@ -148,7 +238,24 @@ export default function PropertyDetailPage() {
               )}
             </p>
           </div>
-          <div className={styles.dealId}>ID: {deal!.id}</div>
+          <div className={styles.headerRight}>
+            {scenarios.length > 1 && (
+              <div className={styles.scenarioSelector}>
+                <label className={styles.scenarioSelectorLabel}>Scenario:</label>
+                <select
+                  className={styles.scenarioSelect}
+                  value={activeScenarioId || ''}
+                  onChange={(e) => setActiveScenarioId(e.target.value)}
+                >
+                  {scenarios.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.is_primary ? '★ ' : ''}{s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -184,6 +291,9 @@ export default function PropertyDetailPage() {
       <div className={styles.tabNav}>
         <button className={`${styles.tab} ${activeTab === 'summary' ? styles.tabActive : ''}`} onClick={() => setActiveTab('summary')}>Deal Summary</button>
         <button className={`${styles.tab} ${activeTab === 'projections' ? styles.tabActive : ''}`} onClick={() => setActiveTab('projections')}>Year-by-Year</button>
+        <button className={`${styles.tab} ${activeTab === 'scenarios' ? styles.tabActive : ''}`} onClick={() => setActiveTab('scenarios')}>
+          Scenarios{scenarios.length > 1 ? ` (${scenarios.length})` : ''}
+        </button>
       </div>
 
       {activeTab === 'summary' && (
@@ -302,6 +412,89 @@ export default function PropertyDetailPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {activeTab === 'scenarios' && (
+        <div>
+          <ScenarioList
+            scenarios={scenarios}
+            activeScenarioId={activeScenarioId}
+            onSelect={(scenarioId) => {
+              setActiveScenarioId(scenarioId);
+              setActiveTab('summary');
+            }}
+            onPromote={handlePromote}
+            onDelete={handleDelete}
+            onNew={handleNewScenario}
+          />
+
+          {/* Compare mode */}
+          {scenarios.length >= 2 && (
+            <div className={styles.compareSection}>
+              <div className={styles.compareHeader}>
+                <button
+                  className={`${styles.compareToggle} ${compareMode ? styles.compareToggleActive : ''}`}
+                  onClick={() => { setCompareMode(!compareMode); setCompareIds([]); }}
+                >
+                  {compareMode ? 'Exit Compare' : 'Compare Scenarios'}
+                </button>
+              </div>
+
+              {compareMode && (
+                <div>
+                  <div className={styles.compareCheckboxes}>
+                    {scenarios.map(s => (
+                      <label key={s.id} className={styles.compareCheckbox}>
+                        <input
+                          type="checkbox"
+                          checked={compareIds.includes(s.id)}
+                          onChange={() => toggleCompare(s.id)}
+                          disabled={!compareIds.includes(s.id) && compareIds.length >= 3}
+                        />
+                        {s.is_primary && '★ '}{s.name}
+                      </label>
+                    ))}
+                  </div>
+
+                  {compareScenarios.length >= 2 && (
+                    <div className={styles.tableWrapper}>
+                      <table className={styles.compareTable}>
+                        <thead>
+                          <tr>
+                            <th>Metric</th>
+                            {compareScenarios.map(s => (
+                              <th key={s.id}>{s.name}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { label: 'IRR', fn: (r: UnderwritingResults) => formatPercent(r.irr) },
+                            { label: 'Cap Rate', fn: (r: UnderwritingResults) => formatPercent(r.capRate) },
+                            { label: 'Equity Multiple', fn: (r: UnderwritingResults) => formatMultiple(r.equityMultiple) },
+                            { label: 'DSCR', fn: (r: UnderwritingResults) => `${r.dscr.toFixed(2)}x` },
+                            { label: 'NOI', fn: (r: UnderwritingResults) => formatCurrency(r.noi) },
+                            { label: 'Cash Flow/mo', fn: (r: UnderwritingResults) => formatCurrency(r.monthlyCashFlow) },
+                            { label: 'Total Profit', fn: (r: UnderwritingResults) => formatCurrency(r.totalProfit) },
+                            { label: 'Cash-on-Cash', fn: (r: UnderwritingResults) => formatPercent(r.cashOnCash) },
+                            { label: 'Equity Required', fn: (r: UnderwritingResults) => formatCurrency(r.totalEquityRequired) },
+                          ].map(row => (
+                            <tr key={row.label}>
+                              <td className={styles.compareMetricLabel}>{row.label}</td>
+                              {compareScenarios.map(s => (
+                                <td key={s.id}>{row.fn(s.results as UnderwritingResults)}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

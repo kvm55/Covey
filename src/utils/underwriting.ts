@@ -1,10 +1,10 @@
 // ============================================================
 // Covey V2 — Underwriting Engine
 // Pure calculation functions for real estate deal analysis
-// Supports: Long Term Hold, Fix and Flip, Short Term Rental
+// Supports: Long Term Rental, Fix and Flip, Short Term Rental
 // ============================================================
 
-export type InvestmentType = 'Long Term Hold' | 'Fix and Flip' | 'Short Term Rental';
+export type InvestmentType = 'Long Term Rental' | 'Fix and Flip' | 'Short Term Rental';
 
 // ---- Input Types ----
 
@@ -47,7 +47,7 @@ export interface PropertyInputs {
   utilities: number; // annual
   otherExpenses: number; // annual
 
-  // Disposition (Long Term Hold & STR)
+  // Disposition (Long Term Rental & STR)
   holdPeriodYears: number;
   annualAppreciation: number; // e.g. 3 for 3%
   annualRentGrowth: number; // e.g. 2 for 2%

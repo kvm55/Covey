@@ -54,7 +54,7 @@ export const properties: Property[] = [
     capRate: 0.064,
     irr: 0.115,
     equityMultiple: 1.75,
-    type: 'Long Term Hold',
+    type: 'Long Term Rental',
     fundStrategy: 'pheasant',
     bedrooms: 3,
     bathrooms: 2,

@@ -68,7 +68,7 @@ export const FUND_LIST: FundConfig[] = Object.values(FUNDS);
 
 const TYPE_TO_FUND: Record<string, FundStrategy> = {
   'workforce housing': 'bobwhite',
-  'long term hold': 'pheasant',
+  'long term rental': 'pheasant',
   'short term rental': 'pheasant',
   'build to rent': 'chukar',
   'development': 'chukar',

@@ -272,6 +272,143 @@
   border-bottom: none;
 }
 
+/* Scenario Selector */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.scenarioSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scenarioSelectorLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-summit);
+}
+
+.scenarioSelect {
+  padding: 6px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: var(--font-family-headings);
+  color: var(--color-evergreen);
+  background: white;
+  cursor: pointer;
+}
+
+.scenarioSelect:focus {
+  outline: none;
+  border-color: var(--color-pine);
+}
+
+/* Compare Section */
+.compareSection {
+  margin-top: 32px;
+}
+
+.compareHeader {
+  margin-bottom: 16px;
+}
+
+.compareToggle {
+  padding: 8px 16px;
+  border: 1px solid var(--color-pine);
+  background: white;
+  color: var(--color-pine);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.compareToggle:hover {
+  background: var(--color-pine);
+  color: white;
+}
+
+.compareToggleActive {
+  background: var(--color-pine);
+  color: white;
+}
+
+.compareCheckboxes {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.compareCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-evergreen);
+  cursor: pointer;
+}
+
+.compareCheckbox input {
+  cursor: pointer;
+}
+
+/* Compare Table */
+.compareTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.compareTable th {
+  background: var(--color-evergreen);
+  color: var(--color-slate);
+  padding: 12px 16px;
+  text-align: right;
+  font-family: var(--font-family-headings);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.compareTable th:first-child {
+  text-align: left;
+  border-radius: 10px 0 0 0;
+}
+
+.compareTable th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+.compareTable td {
+  padding: 10px 16px;
+  text-align: right;
+  border-bottom: 1px solid #f0f0f0;
+  font-family: var(--font-family-headings);
+  color: var(--color-evergreen);
+}
+
+.compareMetricLabel {
+  text-align: left !important;
+  font-weight: 600;
+  color: var(--color-summit) !important;
+}
+
+.compareTable tbody tr:hover {
+  background: #f8fafa;
+}
+
+.compareTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
 @media (max-width: 768px) {
   .metricsBar {
     flex-direction: column;

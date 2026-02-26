@@ -1,0 +1,153 @@
+.container {
+  margin-top: 8px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: var(--font-family-headings);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+  margin: 0;
+}
+
+.newButton {
+  padding: 8px 16px;
+  background: var(--color-pine);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.newButton:hover {
+  background: var(--color-evergreen);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardActive {
+  border-color: var(--color-pine);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-family: var(--font-family-headings);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.primaryStar {
+  color: #f0a500;
+  font-size: 16px;
+}
+
+.strategyBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--color-pine);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metricLabel {
+  font-size: 10px;
+  color: var(--color-spruce);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metricValue {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+}
+
+.actionButton {
+  padding: 5px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-summit);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.actionButton:hover {
+  border-color: var(--color-pine);
+  color: var(--color-pine);
+}
+
+.deleteButton {
+  color: #c0392b;
+  border-color: #e0c8c5;
+}
+
+.deleteButton:hover {
+  background: #fdf2f0;
+  border-color: #c0392b;
+  color: #c0392b;
+}

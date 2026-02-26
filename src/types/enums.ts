@@ -1,6 +1,6 @@
 // ── Property & Fund ─────────────────────────────────────────────
 export type PropertyType =
-  | 'Long Term Hold'
+  | 'Long Term Rental'
   | 'Fix and Flip'
   | 'Short Term Rental'
   | 'Cohabitation'
@@ -65,4 +65,4 @@ export type LeaseTermType = 'nightly' | 'weekly' | 'monthly' | 'annual' | 'multi
 export type RentPeriod = 'nightly' | 'weekly' | 'monthly' | 'annual';
 
 // ── Underwriting ────────────────────────────────────────────────
-export type StrategyType = 'long_term_hold' | 'fix_and_flip' | 'short_term_rental';
+export type StrategyType = 'long_term_rental' | 'fix_and_flip' | 'short_term_rental';
