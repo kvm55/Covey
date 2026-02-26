@@ -14,6 +14,7 @@ import {
   formatPercent,
   formatMultiple,
 } from "@/utils/underwriting";
+import { FUNDS, getFundForStrategy } from "@/data/funds";
 
 type FormSection = 'property' | 'acquisition' | 'debt' | 'income' | 'expenses' | 'disposition';
 
@@ -86,6 +87,7 @@ export default function NewPropertyPage() {
         irr: results.irr / 100,
         equity_multiple: results.equityMultiple,
         type: inputs.type,
+        fund_strategy: getFundForStrategy(inputs.type),
         bedrooms: inputs.bedrooms,
         bathrooms: inputs.bathrooms,
         square_feet: inputs.squareFeet,
@@ -152,12 +154,18 @@ export default function NewPropertyPage() {
       </div>
 
       <div className={styles.typeSelector}>
-        {INVESTMENT_TYPES.map(t => (
-          <button key={t.value} className={`${styles.typeButton} ${inputs.type === t.value ? styles.typeButtonActive : ''}`} onClick={() => handleTypeChange(t.value)}>
-            <span className={styles.typeLabel}>{t.label}</span>
-            <span className={styles.typeDesc}>{t.desc}</span>
-          </button>
-        ))}
+        {INVESTMENT_TYPES.map(t => {
+          const fund = FUNDS[getFundForStrategy(t.value)];
+          return (
+            <button key={t.value} className={`${styles.typeButton} ${inputs.type === t.value ? styles.typeButtonActive : ''}`} onClick={() => handleTypeChange(t.value)}>
+              <span className={styles.typeLabel}>{t.label}</span>
+              <span className={styles.typeDesc}>{t.desc}</span>
+              <span className={styles.typeFundTag} style={{ backgroundColor: fund.color }}>
+                {fund.name.replace(' Fund', '')} ({fund.label})
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       <div className={styles.mainLayout}>
