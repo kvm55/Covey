@@ -1,41 +1,47 @@
 # Covey
 
-**Real Estate Acquisition & Underwriting Platform**
-*by Upland Group*
+**Real Estate Investment Platform**
+*by The Upland Group*
 
 ---
 
 ## Overview
 
-Covey is a real estate investment platform for sourcing, evaluating, and underwriting residential real estate deals. It supports SFR, multifamily, and hospitality-style properties with built-in deal scoring, portfolio analytics, and marketplace functionality.
+Covey is a real estate investment platform for sourcing, underwriting, and managing residential real estate deals. It supports SFR, multifamily, and hospitality-style properties with a built-in underwriting engine, multi-scenario analysis, and a marketplace organized around five bird-named fund strategies.
 
-## Current Status: MVP (Active Development)
+The platform serves both sides of the capital stack: equity funds (The Birds) that own properties, and a captive debt fund that provides financing to deals on the platform.
 
-The platform is in its initial MVP phase with a functional frontend and mock data layer.
+## Current Status
+
+**MVP — Active Development (Phase 2 Complete)**
+
+See [STATUS.md](STATUS.md) for detailed phase tracking and roadmap.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | [Next.js 15](https://nextjs.org/) (App Router) |
-| Language | TypeScript |
-| UI | React 19 |
+| Framework | Next.js 16.1.6 (App Router) |
+| Language | TypeScript 5.4 |
+| UI | React 19.1 |
 | Styling | CSS Modules |
-| Data | Local mock data (`src/data/properties.ts`) |
-| Deployment | TBD (Vercel roadmapped) |
+| Database | Supabase (PostgreSQL + RLS) |
+| Auth | Supabase Auth (email/password) |
+| Deployment | Vercel (production) |
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- npm
+- Supabase project (with `.env.local` configured)
 
 ### Installation
 
 ```bash
-git clone https://github.com/upland-group/covey.git
-cd covey
+git clone https://github.com/kvm55/Covey.git
+cd Covey
 npm install
 ```
 
@@ -57,80 +63,60 @@ npm start
 ## Project Structure
 
 ```
-covey/
-├── src/
-│   ├── app/                    # Next.js App Router pages
-│   │   ├── page.tsx            # Home / Landing
-│   │   ├── layout.tsx          # Root layout
-│   │   ├── dashboard/          # Portfolio dashboard
-│   │   ├── marketplace/        # Property marketplace with filters
-│   │   └── property/
-│   │       ├── new/            # Create new property form
-│   │       └── [id]/           # Property detail & underwriting
-│   ├── components/
-│   │   ├── Header/             # Site navigation
-│   │   ├── Footer/             # Site footer
-│   │   ├── Hero/               # Landing page hero
-│   │   ├── PropertyCard/       # Property listing card
-│   │   ├── PropertyDetails/    # Property detail view
-│   │   ├── PropertyFilter/     # Marketplace filter sidebar
-│   │   ├── PropertyForm/       # New property form
-│   │   └── SiteLayout/         # Layout wrapper
-│   ├── data/
-│   │   └── properties.ts       # Mock property data & types
-│   └── styles/
-│       └── styles.css          # Global styles
-├── public/                     # Static assets
-├── package.json
-├── tsconfig.json
-└── README.md
+src/
+├── app/                        # Next.js App Router pages
+│   ├── page.tsx               # Landing page
+│   ├── dashboard/             # Portfolio dashboard
+│   ├── marketplace/           # Property marketplace (fund strategy filters)
+│   ├── coveyselect/           # Fund bundles page (CoveySelect)
+│   ├── property/
+│   │   ├── new/               # Underwriting form (6-section wizard)
+│   │   └── [id]/              # Property detail, scenarios, compare
+│   └── (auth)/                # Sign in / sign up
+├── components/
+│   ├── Header/                # Navigation (Bobwhite logo)
+│   ├── Footer/
+│   ├── PropertyCard/          # Marketplace listing card
+│   ├── PropertyFilter/        # Fund strategy filters
+│   ├── ScenarioList/          # Scenario cards + compare
+│   └── SiteLayout/
+├── data/
+│   ├── properties.ts          # Seed property data
+│   └── funds.ts               # Bird fund strategy definitions
+├── types/                     # Centralized TypeScript types
+│   ├── enums.ts               # Strategy types, property types, etc.
+│   ├── underwriting.ts        # Scenario row shape
+│   ├── property.ts            # Property entity
+│   ├── building.ts, unit.ts, room.ts, ...
+│   └── index.ts
+├── utils/
+│   ├── underwriting.ts        # Underwriting engine (calc + formatting)
+│   ├── scenarios.ts           # Scenario CRUD + properties sync
+│   └── supabase.ts            # Supabase client
+└── styles/
+    └── styles.css             # Global styles (Ammunition design system)
 ```
 
-## Features (MVP)
+## Features
 
-- **Marketplace** — Browse and filter properties by strategy, bedrooms, bathrooms, sq ft, cap rate, IRR, equity multiple
-- **Property Detail** — Full underwriting view per property
-- **New Property** — Manual property entry with full underwriting inputs
-- **Dashboard** — Portfolio overview, buy box criteria, map placeholder, sensitivity analysis scaffold
-- **Property Types** — Long Term Hold, Fix and Flip, Short Term Rental
+- **Marketplace** — Browse properties filtered by fund strategy, with search, sort, and pagination
+- **Underwriting Engine** — Full P&L analysis for Long Term Rental, Fix & Flip, and Short Term Rental
+- **Multi-Scenario** — Create, compare, promote, and delete underwriting scenarios per property
+- **CoveySelect** — Fund bundles organized by 5 bird-named strategies (Bobwhite → Grouse)
+- **Property Detail** — Deal summary, year-by-year projections, scenario selector, side-by-side compare
+- **Auth** — Email/password sign in and sign up with route protection
+- **Dashboard** — Portfolio overview scaffold
 
-## Branching Strategy
+## Fund Strategies (The Birds)
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production-ready code |
-| `dev` | Integration branch for active development |
-| `feature/*` | Individual feature branches off `dev` |
-| `hotfix/*` | Critical fixes branched from `main` |
-
-## Roadmap
-
-### Near Term
-- [ ] Backend integration (database, API)
-- [ ] Authentication & user accounts
-- [ ] Vercel deployment (staging + production)
-- [ ] CI/CD via GitHub Actions
-- [ ] Map integration (Mapbox/Google Maps)
-
-### Mid Term
-- [ ] Deal scoring engine
-- [ ] Portfolio analytics & charting
-- [ ] Role-based access (GP/LP views)
-- [ ] Export & reporting tools
-
-### Long Term
-- [ ] Tokenized ownership structures
-- [ ] GP/LP syndication flows
-- [ ] SaaS / consulting layer
-- [ ] Marketplace-style UI with live listings
-
-## Contributing
-
-1. Create a feature branch from `dev`: `git checkout -b feature/your-feature dev`
-2. Make your changes
-3. Submit a PR to `dev`
-4. After review and merge, `dev` gets promoted to `main` for releases
+| Fund | Strategy | Risk |
+|------|----------|------|
+| Bobwhite | Midwest LTR cash flow | Low |
+| Pheasant | SE balanced total return | Medium |
+| Chukar | Sun Belt appreciation | Med-High |
+| Woodcock | Workforce housing / Impact | Medium |
+| Grouse | Fix-and-flip / Value-add | High |
 
 ## License
 
-Private — Upland Group. All rights reserved.
+Private — The Upland Group LLC. All rights reserved.
