@@ -7,6 +7,7 @@ export interface FundConfig {
   label: string;
   color: string;
   riskLevel: 'Low' | 'Low-Medium' | 'Medium' | 'Medium-High' | 'High';
+  targetReturn: string;
   description: string;
   strategySummary: string;
 }
@@ -19,6 +20,7 @@ export const FUNDS: Record<FundStrategy, FundConfig> = {
     label: 'Income',
     color: '#2D4A2D',
     riskLevel: 'Low',
+    targetReturn: '5-7% yield',
     description: 'Stable, income-producing workforce housing with long-term Section 8 tenants.',
     strategySummary: 'Cash flow-first strategy targeting stabilized assets with reliable government-backed rental income.',
   },
@@ -29,6 +31,7 @@ export const FUNDS: Record<FundStrategy, FundConfig> = {
     label: 'Balanced',
     color: '#3D6B3D',
     riskLevel: 'Low-Medium',
+    targetReturn: '8-10% yield',
     description: 'Balanced long-term holds blending steady income with moderate appreciation.',
     strategySummary: 'Core-plus strategy combining stable rental yield with upside through light value-add and market growth.',
   },
@@ -39,6 +42,7 @@ export const FUNDS: Record<FundStrategy, FundConfig> = {
     label: 'Growth',
     color: '#D48B0A',
     riskLevel: 'Medium',
+    targetReturn: '12-18% IRR',
     description: 'Growth-oriented build-to-rent and development plays in high-demand corridors.',
     strategySummary: 'Development and BTR strategy targeting emerging markets with strong population and job growth.',
   },
@@ -49,6 +53,7 @@ export const FUNDS: Record<FundStrategy, FundConfig> = {
     label: 'Impact',
     color: '#5A6E82',
     riskLevel: 'Medium-High',
+    targetReturn: '6-8% + ESG',
     description: 'Impact-driven cohabitation and community-focused housing models.',
     strategySummary: 'Social impact strategy pairing shared-living models with community development for blended returns.',
   },
@@ -59,6 +64,7 @@ export const FUNDS: Record<FundStrategy, FundConfig> = {
     label: 'Alpha',
     color: '#722F37',
     riskLevel: 'High',
+    targetReturn: '15-22% IRR',
     description: 'Opportunistic fix-and-flip and deep value-add plays targeting outsized returns.',
     strategySummary: 'Alpha-seeking strategy focused on distressed acquisitions, heavy rehab, and quick-turn dispositions.',
   },
