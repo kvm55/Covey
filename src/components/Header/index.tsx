@@ -9,6 +9,7 @@ import styles from "./header.module.css";
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Marketplace", href: "/marketplace" },
+  { name: "CoveySelect", href: "/coveyselect" },
   { name: "Dashboard", href: "/dashboard" },
   { name: "New Property", href: "/property/new" },
 ];

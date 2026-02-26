@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { FUND_LIST } from "@/data/funds";
 import styles from "./PropertyFilter.module.css";
 
 type FilterProps = {
@@ -8,7 +9,14 @@ type FilterProps = {
   onRangeChange: (filter: string, min: number, max: number) => void;
 };
 
-const investmentTypes = ["All", "Fix and Flip", "Long-Term Hold", "Short-Term Rental"];
+const fundFilters = [
+  { key: "All", label: "All", color: undefined },
+  ...FUND_LIST.map((f) => ({
+    key: f.id,
+    label: `${f.bird.split(' ')[0]} (${f.label})`,
+    color: f.color,
+  })),
+];
 
 export default function PropertyFilter({ selectedType, onChange, onRangeChange }: FilterProps) {
   const [bedroomsRange, setBedroomsRange] = useState({ min: 0, max: 6 });
@@ -20,15 +28,24 @@ export default function PropertyFilter({ selectedType, onChange, onRangeChange }
 
   return (
     <div className={styles.filterBar}>
-      {investmentTypes.map((type) => (
-        <button
-          key={type}
-          className={`${styles.button} ${selectedType === type ? styles.active : ""}`}
-          onClick={() => onChange(type)}
-        >
-          {type}
-        </button>
-      ))}
+      <p className={styles.filterTitle}>Fund Strategy</p>
+      <div className={styles.typeSection}>
+        {fundFilters.map((filter) => (
+          <button
+            key={filter.key}
+            className={`${styles.button} ${selectedType === filter.key ? styles.active : ""}`}
+            onClick={() => onChange(filter.key)}
+          >
+            {filter.color && (
+              <span
+                className={styles.colorDot}
+                style={{ backgroundColor: filter.color }}
+              />
+            )}
+            {filter.label}
+          </button>
+        ))}
+      </div>
       <div className={styles.rangeSection}>
         <div className={styles.rangeFilter}>
           <label className={styles.label}>Bedrooms: {bedroomsRange.min} - {bedroomsRange.max}</label>

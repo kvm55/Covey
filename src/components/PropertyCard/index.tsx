@@ -1,3 +1,5 @@
+import { FUNDS } from "@/data/funds";
+import type { FundStrategy } from "@/data/funds";
 import styles from "./PropertyCard.module.css";
 
 type PropertyCardProps = {
@@ -14,6 +16,7 @@ type PropertyCardProps = {
   capRate: string;
   equityMultiple: string;
   price?: string;
+  fundStrategy?: FundStrategy;
 };
 
 export default function PropertyCard({
@@ -30,7 +33,10 @@ export default function PropertyCard({
   capRate,
   equityMultiple,
   price,
+  fundStrategy,
 }: PropertyCardProps) {
+  const fund = fundStrategy ? FUNDS[fundStrategy] : null;
+
   return (
     <div className={styles.card}>
       <img
@@ -62,7 +68,17 @@ export default function PropertyCard({
             <span>🛁 {bathrooms}</span>
             <span>📐 {squareFeet} SF</span>
           </div>
-          <span className={styles.type}>{type}</span>
+          <div className={styles.badgeRow}>
+            {fund && (
+              <span
+                className={styles.strategyBadge}
+                style={{ backgroundColor: fund.color }}
+              >
+                {fund.name.replace(' Fund', '')} ({fund.label})
+              </span>
+            )}
+            <span className={styles.type}>{type}</span>
+          </div>
         </div>
       </div>
     </div>

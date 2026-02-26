@@ -1,3 +1,15 @@
+import type { FundStrategy } from './funds';
+
+export type PropertyType =
+  | 'Long Term Hold'
+  | 'Fix and Flip'
+  | 'Short Term Rental'
+  | 'Cohabitation'
+  | 'Build to Rent'
+  | 'Development'
+  | 'Workforce Housing'
+  | 'Value Add';
+
 export interface Property {
   id: string;
   streetAddress: string;
@@ -9,7 +21,8 @@ export interface Property {
   capRate: number;
   irr: number;
   equityMultiple: number;
-  type: 'Long Term Hold' | 'Fix and Flip' | 'Short Term Rental';
+  type: PropertyType;
+  fundStrategy?: FundStrategy;
   bedrooms: number;
   bathrooms: number;
   squareFeet: number;
@@ -44,6 +57,7 @@ export const properties: Property[] = [
     irr: 0.115,
     equityMultiple: 1.75,
     type: 'Long Term Hold',
+    fundStrategy: 'pheasant',
     bedrooms: 3,
     bathrooms: 2,
     squareFeet: 1450,
@@ -76,6 +90,7 @@ export const properties: Property[] = [
     irr: 0.145,
     equityMultiple: 1.92,
     type: 'Fix and Flip',
+    fundStrategy: 'grouse',
     bedrooms: 4,
     bathrooms: 3,
     squareFeet: 1800,
@@ -108,6 +123,7 @@ export const properties: Property[] = [
     irr: 0.158,
     equityMultiple: 2.12,
     type: 'Short Term Rental',
+    fundStrategy: 'pheasant',
     bedrooms: 5,
     bathrooms: 3,
     squareFeet: 2100,

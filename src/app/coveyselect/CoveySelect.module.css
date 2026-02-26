@@ -1,0 +1,138 @@
+.container {
+  padding: 32px;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 48px;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, var(--color-evergreen), var(--color-pine));
+  border-radius: 12px;
+  color: #ffffff;
+}
+
+.heroTitle {
+  font-family: var(--font-family-headings);
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.heroTagline {
+  font-family: var(--font-family-body);
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.85;
+}
+
+.fundSection {
+  margin-bottom: 48px;
+}
+
+.fundHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.fundColorBar {
+  width: 4px;
+  height: 40px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.fundBird {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.fundTitle {
+  font-family: var(--font-family-headings);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0;
+}
+
+.fundLabel {
+  font-size: 12px;
+  color: #ffffff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.fundDescription {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  margin: 0 0 20px 0;
+  max-width: 700px;
+}
+
+.fundGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 32px 24px;
+  color: var(--color-spruce);
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  background: #f7f8f7;
+  border-radius: 8px;
+}
+
+.exploreLink {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-pine);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.exploreLink:hover {
+  color: var(--color-evergreen);
+}
+
+@media (max-width: 968px) {
+  .fundGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 16px;
+  }
+
+  .hero {
+    padding: 32px 16px;
+  }
+
+  .heroTitle {
+    font-size: 26px;
+  }
+
+  .fundGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .fundTitle {
+    font-size: 20px;
+  }
+}

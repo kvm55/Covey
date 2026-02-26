@@ -6,6 +6,8 @@ import PropertyFilter from "@/components/PropertyFilter";
 import PropertyCard from "@/components/PropertyCard";
 import styles from "./Marketplace.module.css";
 import { createClient } from "@/utils/supabase";
+import { getFundForStrategy } from "@/data/funds";
+import type { FundStrategy } from "@/data/funds";
 
 type Property = {
   id: string;
@@ -22,6 +24,7 @@ type Property = {
   bedrooms: number;
   bathrooms: number;
   square_feet: number;
+  fund_strategy: FundStrategy | null;
 };
 
 const ITEMS_PER_PAGE = 12;
@@ -93,17 +96,17 @@ export default function MarketplacePage() {
     const query = searchQuery.toLowerCase();
 
     const filtered = properties.filter((property) => {
-      const normalizedFilter = selectedType.toLowerCase().replace(/-/g, " ");
-      const normalizedType = property.type.toLowerCase();
-
       const matchesSearch =
         !query ||
         property.street_address.toLowerCase().includes(query) ||
         property.city.toLowerCase().includes(query);
 
+      const propertyFund = property.fund_strategy || getFundForStrategy(property.type);
+      const matchesFund = selectedType === "All" || propertyFund === selectedType;
+
       return (
         matchesSearch &&
-        (selectedType === "All" || normalizedType === normalizedFilter) &&
+        matchesFund &&
         property.bedrooms <= filters.bedrooms.max &&
         property.bathrooms <= filters.bathrooms.max &&
         property.square_feet <= filters.squareFeet.max &&
@@ -191,6 +194,7 @@ export default function MarketplacePage() {
               const formattedIrr = `${(property.irr * 100).toFixed(1)}%`;
               const formattedEquityMultiple = `${property.equity_multiple.toFixed(1)}x`;
               const formattedPrice = formatPrice(property.price);
+              const fundStrategy = property.fund_strategy || getFundForStrategy(property.type);
 
               return (
                 <Link
@@ -212,6 +216,7 @@ export default function MarketplacePage() {
                     capRate={formattedCapRate}
                     equityMultiple={formattedEquityMultiple}
                     price={formattedPrice}
+                    fundStrategy={fundStrategy}
                   />
                 </Link>
               );

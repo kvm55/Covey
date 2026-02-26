@@ -7,6 +7,13 @@
   --color-spruce: #7B8B85;
   --color-slate: #BFBDB8;
 
+  /* Fund Strategy Colors */
+  --color-fund-bobwhite: #2D4A2D;
+  --color-fund-pheasant: #3D6B3D;
+  --color-fund-chukar: #D48B0A;
+  --color-fund-woodcock: #5A6E82;
+  --color-fund-grouse: #722F37;
+
   /* Global usage */
   --color-background: var(--color-slate);
   --color-text: var(--color-evergreen);
