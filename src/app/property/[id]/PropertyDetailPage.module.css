@@ -409,6 +409,54 @@
   border-bottom: none;
 }
 
+/* Covey Debt Fund Badge */
+.coveyDebtBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--color-pine);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Covey Compare Section */
+.coveyCompareSection {
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.coveyCompareButton {
+  padding: 10px 20px;
+  border: 1.5px solid var(--color-pine);
+  background: white;
+  color: var(--color-pine);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-family-headings);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.coveyCompareButton:hover {
+  background: var(--color-pine);
+  color: white;
+}
+
+.coveyCompareAlert {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: #fef3e2;
+  color: #b8860b;
+  border: 1px solid #f5d89a;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .metricsBar {
     flex-direction: column;

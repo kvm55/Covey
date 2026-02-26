@@ -33,6 +33,7 @@ export interface PropertyInputs {
   loanTermYears: number;
   amortizationYears: number;
   interestOnly: boolean;
+  financingSource: 'external' | 'covey_debt';
 
   // Income
   grossMonthlyRent: number;
@@ -537,6 +538,7 @@ export function getDefaultInputs(type: InvestmentType): PropertyInputs {
     loanTermYears: 30,
     amortizationYears: 30,
     interestOnly: false,
+    financingSource: 'external',
     grossMonthlyRent: 0,
     otherMonthlyIncome: 0,
     vacancyRate: 5,

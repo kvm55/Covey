@@ -464,6 +464,85 @@
   }
 }
 
+/* Financing Source Toggle */
+.financingToggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1.5px solid var(--color-spruce);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.financingOption {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: white;
+  font-family: var(--font-family-headings);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-summit);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.financingOption:first-child {
+  border-right: 1.5px solid var(--color-spruce);
+}
+
+.financingOption:hover:not(:disabled) {
+  background: #f4f7f6;
+  color: var(--color-evergreen);
+}
+
+.financingOption:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.financingOptionActive {
+  background: var(--color-pine);
+  color: white;
+}
+
+.financingOptionActive:hover {
+  background: var(--color-pine);
+  color: white;
+}
+
+/* Qualification Badge */
+.qualBadge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.2px;
+}
+
+.qualBadgeEligible {
+  background: #e6f7ef;
+  color: #1a7a4c;
+  border: 1px solid #b5e5c9;
+}
+
+.qualBadgeIneligible {
+  background: #fef3e2;
+  color: #b8860b;
+  border: 1px solid #f5d89a;
+}
+
+/* Read-only field (Covey-locked) */
+.fieldReadonly {
+  border-style: dashed !important;
+  border-color: var(--color-spruce) !important;
+  background: #f0f2f4 !important;
+  color: var(--color-summit) !important;
+  cursor: default;
+}
+
 /* Remove number input spinners */
 .input[type="number"]::-webkit-outer-spin-button,
 .input[type="number"]::-webkit-inner-spin-button {

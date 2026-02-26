@@ -274,6 +274,7 @@ async function syncPrimaryToProperty(
       stabilized_rent: inputs.type === 'Long Term Rental' ? inputs.grossMonthlyRent : 0,
       noi_margin: results.noiMargin / 100,
       dscr: results.dscr,
+      financing_source: inputs.financingSource || 'external',
     })
     .eq('id', propertyId);
 

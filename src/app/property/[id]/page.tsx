@@ -9,6 +9,7 @@ import { FUNDS, getFundForStrategy } from "@/data/funds";
 import type { FundStrategy } from "@/data/funds";
 import type { UnderwritingScenarioRow } from "@/types/underwriting";
 import { fetchScenarios, createScenario, promoteScenario, deleteScenario, toStrategyType } from "@/utils/scenarios";
+import { createCoveyDebtScenario } from "@/utils/covey-debt-scenarios";
 import ScenarioList from "@/components/ScenarioList/ScenarioList";
 import styles from "./PropertyDetailPage.module.css";
 
@@ -41,6 +42,7 @@ export default function PropertyDetailPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('summary');
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [compareMode, setCompareMode] = useState(false);
+  const [coveyCompareError, setCoveyCompareError] = useState<string | null>(null);
 
   // ── Load data ────────────────────────────────────────────────
   useEffect(() => {
@@ -151,6 +153,27 @@ export default function PropertyDetailPage() {
       return [...prev, scenarioId];
     });
   }, []);
+
+  const handleCoveyCompare = useCallback(async () => {
+    const active = scenarios.find(s => s.id === activeScenarioId);
+    if (!active) return;
+
+    setCoveyCompareError(null);
+    const result = await createCoveyDebtScenario(
+      id as string,
+      active.inputs as PropertyInputs,
+      active.results as UnderwritingResults,
+      scenarios.length,
+    );
+
+    if (result.success && result.scenarioId) {
+      await reloadScenarios();
+      setActiveScenarioId(result.scenarioId);
+      setActiveTab('scenarios');
+    } else {
+      setCoveyCompareError(result.reason || 'Could not create Covey financing scenario');
+    }
+  }, [id, scenarios, activeScenarioId, reloadScenarios]);
 
   // ── Loading state ────────────────────────────────────────────
   if (loading) {
@@ -315,6 +338,16 @@ export default function PropertyDetailPage() {
           {/* Debt Terms */}
           <div className={styles.detailCard}>
             <h3>Debt Service</h3>
+            <div className={styles.detailRow}>
+              <span>Financing</span>
+              <strong>
+                {inp.financingSource === 'covey_debt' ? (
+                  <span className={styles.coveyDebtBadge}>Covey Debt Fund</span>
+                ) : (
+                  <span>External Lender</span>
+                )}
+              </strong>
+            </div>
             <div className={styles.detailRow}><span>Interest Rate</span><strong>{formatPercent(inp.interestRate)}</strong></div>
             <div className={styles.detailRow}><span>Amortization</span><strong>{inp.amortizationYears} yrs</strong></div>
             <div className={styles.detailRow}><span>Interest Only</span><strong>{inp.interestOnly ? 'Yes' : 'No'}</strong></div>
@@ -429,6 +462,18 @@ export default function PropertyDetailPage() {
             onNew={handleNewScenario}
           />
 
+          {/* Covey Debt Comparison */}
+          {inp.financingSource !== 'covey_debt' && (
+            <div className={styles.coveyCompareSection}>
+              <button className={styles.coveyCompareButton} onClick={handleCoveyCompare}>
+                Compare with Covey Financing
+              </button>
+              {coveyCompareError && (
+                <div className={styles.coveyCompareAlert}>{coveyCompareError}</div>
+              )}
+            </div>
+          )}
+
           {/* Compare mode */}
           {scenarios.length >= 2 && (
             <div className={styles.compareSection}>
@@ -470,10 +515,12 @@ export default function PropertyDetailPage() {
                         </thead>
                         <tbody>
                           {[
+                            { label: 'Financing', fn: (_r: UnderwritingResults, i: PropertyInputs) => i.financingSource === 'covey_debt' ? 'Covey Debt Fund' : 'External' },
                             { label: 'IRR', fn: (r: UnderwritingResults) => formatPercent(r.irr) },
                             { label: 'Cap Rate', fn: (r: UnderwritingResults) => formatPercent(r.capRate) },
                             { label: 'Equity Multiple', fn: (r: UnderwritingResults) => formatMultiple(r.equityMultiple) },
                             { label: 'DSCR', fn: (r: UnderwritingResults) => `${r.dscr.toFixed(2)}x` },
+                            { label: 'Interest Rate', fn: (_r: UnderwritingResults, i: PropertyInputs) => formatPercent(i.interestRate) },
                             { label: 'NOI', fn: (r: UnderwritingResults) => formatCurrency(r.noi) },
                             { label: 'Cash Flow/mo', fn: (r: UnderwritingResults) => formatCurrency(r.monthlyCashFlow) },
                             { label: 'Total Profit', fn: (r: UnderwritingResults) => formatCurrency(r.totalProfit) },
@@ -483,7 +530,7 @@ export default function PropertyDetailPage() {
                             <tr key={row.label}>
                               <td className={styles.compareMetricLabel}>{row.label}</td>
                               {compareScenarios.map(s => (
-                                <td key={s.id}>{row.fn(s.results as UnderwritingResults)}</td>
+                                <td key={s.id}>{row.fn(s.results as UnderwritingResults, s.inputs as PropertyInputs)}</td>
                               ))}
                             </tr>
                           ))}

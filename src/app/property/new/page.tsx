@@ -16,6 +16,7 @@ import {
 } from "@/utils/underwriting";
 import { FUNDS, getFundForStrategy } from "@/data/funds";
 import { createScenario, toStrategyType } from "@/utils/scenarios";
+import { qualifyForCoveyDebt, applyCoveyDebtTerms } from "@/data/covey-debt";
 
 type FormSection = 'property' | 'acquisition' | 'debt' | 'income' | 'expenses' | 'disposition';
 
@@ -41,8 +42,25 @@ export default function NewPropertyPage() {
 
   const results: UnderwritingResults = useMemo(() => runUnderwriting(inputs), [inputs]);
 
+  const isCovey = inputs.financingSource === 'covey_debt';
+
+  const coveyQualification = useMemo(
+    () => qualifyForCoveyDebt(inputs, results.noi),
+    [inputs, results.noi],
+  );
+
+  const DEBT_FIELDS: Set<keyof PropertyInputs> = new Set([
+    'loanAmount', 'interestRate', 'loanTermYears', 'amortizationYears', 'interestOnly',
+  ]);
+
   const updateField = useCallback(<K extends keyof PropertyInputs>(field: K, value: PropertyInputs[K]) => {
-    setInputs(prev => ({ ...prev, [field]: value }));
+    setInputs(prev => {
+      // If user manually edits a Covey-locked debt field, switch back to External
+      if (prev.financingSource === 'covey_debt' && DEBT_FIELDS.has(field)) {
+        return { ...prev, [field]: value, financingSource: 'external' as const };
+      }
+      return { ...prev, [field]: value };
+    });
   }, []);
 
   const handleTypeChange = useCallback((type: InvestmentType) => {
@@ -68,6 +86,15 @@ export default function NewPropertyPage() {
   const autoCalcLoan = useCallback(() => {
     updateField('loanAmount', Math.round(inputs.purchasePrice * 0.75));
   }, [inputs.purchasePrice, updateField]);
+
+  const handleFinancingToggle = useCallback((source: 'external' | 'covey_debt') => {
+    if (source === 'covey_debt') {
+      if (!coveyQualification.eligible) return;
+      setInputs(prev => applyCoveyDebtTerms(prev, coveyQualification));
+    } else {
+      updateField('financingSource', 'external');
+    }
+  }, [coveyQualification, updateField]);
 
   const [saving, setSaving] = useState(false);
 
@@ -106,6 +133,7 @@ export default function NewPropertyPage() {
         stabilized_rent: inputs.type === 'Long Term Rental' ? inputs.grossMonthlyRent : 0,
         noi_margin: results.noiMargin / 100,
         dscr: results.dscr,
+        financing_source: inputs.financingSource || 'external',
         spread: 0,
       })
       .select()
@@ -137,20 +165,24 @@ export default function NewPropertyPage() {
   const goPrev = () => { if (!isFirst) setActiveSection(SECTIONS[sectionIndex - 1].key); };
   const hasInputs = inputs.purchasePrice > 0;
 
-  const renderField = (label: string, field: keyof PropertyInputs, opts: { prefix?: string; suffix?: string; step?: string; placeholder?: string; type?: string } = {}) => (
-    <div className={styles.field}>
-      <label className={styles.label}>{label}</label>
-      {opts.prefix || opts.suffix ? (
-        <div className={opts.prefix ? styles.inputWithPrefix : styles.inputWithSuffix}>
-          {opts.prefix && <span className={styles.prefix}>{opts.prefix}</span>}
-          <input className={styles.input} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} />
-          {opts.suffix && <span className={styles.suffix}>{opts.suffix}</span>}
-        </div>
-      ) : (
-        <input className={styles.input} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} />
-      )}
-    </div>
-  );
+  const renderField = (label: string, field: keyof PropertyInputs, opts: { prefix?: string; suffix?: string; step?: string; placeholder?: string; type?: string; readOnly?: boolean } = {}) => {
+    const isReadOnly = opts.readOnly || (isCovey && DEBT_FIELDS.has(field));
+    const inputClass = `${styles.input} ${isReadOnly ? styles.fieldReadonly : ''}`;
+    return (
+      <div className={styles.field}>
+        <label className={styles.label}>{label}</label>
+        {opts.prefix || opts.suffix ? (
+          <div className={opts.prefix ? styles.inputWithPrefix : styles.inputWithSuffix}>
+            {opts.prefix && <span className={styles.prefix}>{opts.prefix}</span>}
+            <input className={inputClass} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} readOnly={isReadOnly} />
+            {opts.suffix && <span className={styles.suffix}>{opts.suffix}</span>}
+          </div>
+        ) : (
+          <input className={inputClass} type={opts.type || "number"} step={opts.step} value={(inputs[field] as number) || ''} onChange={handleNumericChange(field)} placeholder={opts.placeholder} readOnly={isReadOnly} />
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.pageWrapper}>
@@ -236,15 +268,43 @@ export default function NewPropertyPage() {
             {activeSection === 'debt' && (
               <div className={styles.section}>
                 <h2 className={styles.sectionTitle}>Debt Terms</h2>
+
+                {/* Financing Source Toggle */}
+                <div className={styles.financingToggle}>
+                  <button
+                    className={`${styles.financingOption} ${!isCovey ? styles.financingOptionActive : ''}`}
+                    onClick={() => handleFinancingToggle('external')}
+                  >
+                    External Lender
+                  </button>
+                  <button
+                    className={`${styles.financingOption} ${isCovey ? styles.financingOptionActive : ''}`}
+                    onClick={() => handleFinancingToggle('covey_debt')}
+                    disabled={!coveyQualification.eligible && !isCovey}
+                  >
+                    Covey Debt Fund
+                  </button>
+                </div>
+
+                {/* Qualification Badge */}
+                {inputs.purchasePrice > 0 && (
+                  <div className={`${styles.qualBadge} ${coveyQualification.eligible ? styles.qualBadgeEligible : styles.qualBadgeIneligible}`}>
+                    {coveyQualification.eligible
+                      ? `Covey Eligible${coveyQualification.dscrTier ? ` — ${coveyQualification.dscrTier}` : ''}`
+                      : `Covey Ineligible — ${coveyQualification.reason}`
+                    }
+                  </div>
+                )}
+
                 <div className={styles.fieldGrid}>
                   <div className={styles.field}>
                     <label className={styles.label}>
                       Loan Amount
-                      {inputs.purchasePrice > 0 && <button className={styles.autoCalc} onClick={autoCalcLoan}>Auto 75% LTV</button>}
+                      {inputs.purchasePrice > 0 && !isCovey && <button className={styles.autoCalc} onClick={autoCalcLoan}>Auto 75% LTV</button>}
                     </label>
                     <div className={styles.inputWithPrefix}>
                       <span className={styles.prefix}>$</span>
-                      <input className={styles.input} type="number" value={inputs.loanAmount || ''} onChange={handleNumericChange('loanAmount')} />
+                      <input className={`${styles.input} ${isCovey ? styles.fieldReadonly : ''}`} type="number" value={inputs.loanAmount || ''} onChange={handleNumericChange('loanAmount')} readOnly={isCovey} />
                     </div>
                   </div>
                   {renderField('Interest Rate', 'interestRate', { suffix: '%', step: '0.1' })}
@@ -252,7 +312,7 @@ export default function NewPropertyPage() {
                   {renderField('Amortization', 'amortizationYears', { suffix: 'yrs' })}
                   <div className={styles.fieldFull}>
                     <label className={styles.checkboxLabel}>
-                      <input type="checkbox" checked={inputs.interestOnly} onChange={(e) => updateField('interestOnly', e.target.checked)} />
+                      <input type="checkbox" checked={inputs.interestOnly} onChange={(e) => updateField('interestOnly', e.target.checked)} disabled={isCovey} />
                       Interest Only
                     </label>
                   </div>
