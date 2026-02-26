@@ -1,6 +1,6 @@
 # Covey — Project Status
 
-> Last updated: 2026-02-26
+> Last updated: 2026-02-25
 
 ## Platform Vision
 
@@ -95,7 +95,7 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 - [x] "Long Term Hold" → "Long Term Rental" rename (types, enums, data, DB constraints)
 - [x] Unique partial index enforcing one primary per property
 
-### Phase 3: CoveySelect + Compass — IN PROGRESS
+### Phase 3: CoveySelect + Compass + Debt Fund — IN PROGRESS
 
 **3A: CoveySelect Enhancement** — NOT STARTED
 - [ ] Expand `/coveyselect` from static fund bundles to interactive fund explorer
@@ -118,11 +118,22 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 - [x] Header nav link ("Compass" at `/compass`)
 - [x] Type exports from `src/types/index.ts`
 
-**3C: Debt Fund Integration (Underwriting)**
-- [ ] Add debt fund as financing source option in underwriting form
-- [ ] Show "Covey Debt Fund" vs "External Lender" toggle in debt terms section
-- [ ] Debt fund deals get pre-populated terms (rate, LTV, IO period) from fund parameters
-- [ ] Scenario compare can show same deal with Covey financing vs external financing
+**3C: Debt Fund Integration (Underwriting) — COMPLETE**
+*Commit: cbcb0b5 (Feb 25, 2026)*
+
+- [x] Covey Debt Fund config: lending parameters by deal type (LTR 75% LTV / 8%, Flip 70% / 10%, STR 70% / 9%)
+- [x] DSCR spread tiers: >=1.5x → -50bps, >=1.3x → -25bps, >=1.1x → +0bps, <1.1x → ineligible
+- [x] `qualifyForCoveyDebt()` + `applyCoveyDebtTerms()` qualification/application functions
+- [x] `financingSource` field added to `PropertyInputs` type (`'external' | 'covey_debt'`)
+- [x] Segmented toggle in debt section: External Lender | Covey Debt Fund
+- [x] Qualification badge (green eligible with tier, amber ineligible with reason)
+- [x] Auto-populate debt fields when Covey selected; fields become read-only (dashed border)
+- [x] Auto-switch back to External if user manually edits a locked debt field
+- [x] `financing_source` column on properties table (migration 007)
+- [x] One-click "Compare with Covey Financing" button on property detail scenarios tab
+- [x] Covey Debt Fund badge in Debt Service summary card
+- [x] Financing + Interest Rate rows added to scenario compare table
+- [x] Primary scenario sync includes `financing_source`
 
 ### Phase 4: Dashboard + Analytics — NOT STARTED
 - [ ] Portfolio analytics with charting (chart.js or recharts)
@@ -164,6 +175,7 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 | 004 | create_hierarchy_tables | 2026-02-25 | 13 relational tables + auto-migration |
 | 005 | scenario_updates | 2026-02-25 | Unique primary index + LTH→LTR rename |
 | 006 | create_investor_profiles | 2026-02-26 | Investor profiles table for Compass (breed, scores, allocation) |
+| 007 | add_financing_source | 2026-02-25 | financing_source column on properties (external / covey_debt) |
 
 ---
 
@@ -173,6 +185,8 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 |------|------|
 | Underwriting engine | `src/utils/underwriting.ts` |
 | Scenario CRUD | `src/utils/scenarios.ts` |
+| Covey Debt Fund config | `src/data/covey-debt.ts` |
+| Covey Debt scenario helper | `src/utils/covey-debt-scenarios.ts` |
 | Fund definitions | `src/data/funds.ts` |
 | Type system | `src/types/` (enums, property, building, unit, etc.) |
 | New deal form | `src/app/property/new/page.tsx` |
