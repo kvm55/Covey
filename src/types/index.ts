@@ -30,3 +30,16 @@ export type { LeaseRow } from './lease';
 export type { LeaseContractRow } from './lease-contract';
 export type { RentScheduleRow } from './rent-schedule';
 export type { UnderwritingScenarioRow } from './underwriting';
+
+// ── Investor / Eye Test ───────────────────────────────────────
+export type {
+  InvestorBreed,
+  BreedScores,
+  FundAllocation,
+  ABQuestion,
+  SliderConfig,
+  SliderValues,
+  BreedProfile,
+  InvestorProfileRow,
+  EyeTestStep,
+} from './investor';

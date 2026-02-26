@@ -1,0 +1,579 @@
+/* ── Layout ─────────────────────────────────────────────────── */
+.container {
+  padding: 32px;
+  box-sizing: border-box;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+/* ── Hero / Intro ──────────────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 64px 24px;
+  background: linear-gradient(135deg, var(--color-evergreen), var(--color-pine));
+  border-radius: 12px;
+  color: #ffffff;
+  margin-bottom: 32px;
+}
+
+.heroTitle {
+  font-family: var(--font-family-headings);
+  font-size: 40px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.heroTagline {
+  font-family: var(--font-family-headings);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
+.heroSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 13px;
+  margin: 0 0 32px 0;
+  opacity: 0.55;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: 0.2px;
+}
+
+.startButton {
+  display: inline-block;
+  padding: 14px 40px;
+  background: #ffffff;
+  color: var(--color-evergreen);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-family-headings);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  letter-spacing: 0.3px;
+}
+
+.startButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Progress Bar ──────────────────────────────────────────── */
+.progressContainer {
+  margin-bottom: 32px;
+}
+
+.progressLabel {
+  font-family: var(--font-family-headings);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-summit);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.progressBar {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--color-pine);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* ── A/B Section ───────────────────────────────────────────── */
+.abSection {
+  animation: fadeInUp 0.3s ease;
+}
+
+.abPrompt {
+  font-family: var(--font-family-headings);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  text-align: center;
+  margin: 0 0 32px 0;
+}
+
+.abCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.abCard {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 32px 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+}
+
+.abCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-spruce);
+}
+
+.abCardSelected {
+  border-color: var(--color-pine);
+  background: #f0f7f0;
+}
+
+.abCardLetter {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-spruce);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px 0;
+}
+
+.abCardLabel {
+  font-family: var(--font-family-headings);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 8px 0;
+}
+
+.abCardDesc {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: var(--font-family-headings);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-summit);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.backButton:hover {
+  border-color: var(--color-pine);
+  color: var(--color-pine);
+}
+
+/* ── Sliders Section ───────────────────────────────────────── */
+.slidersSection {
+  animation: fadeInUp 0.3s ease;
+}
+
+.slidersTitle {
+  font-family: var(--font-family-headings);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+
+.slidersSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  text-align: center;
+  margin: 0 0 32px 0;
+}
+
+.sliderCard {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+}
+
+.sliderLabel {
+  font-family: var(--font-family-headings);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 4px 0;
+}
+
+.sliderDesc {
+  font-family: var(--font-family-body);
+  font-size: 13px;
+  color: var(--color-summit);
+  margin: 0 0 16px 0;
+}
+
+.sliderTrack {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sliderEndLabel {
+  font-family: var(--font-family-headings);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-spruce);
+  min-width: 90px;
+  white-space: nowrap;
+}
+
+.sliderEndLabelRight {
+  text-align: right;
+}
+
+.sliderInput {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sliderInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-pine);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.sliderInput::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.sliderInput::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-pine);
+  cursor: pointer;
+  border: none;
+}
+
+.sliderValue {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-pine);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.resultsButton {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--color-pine);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-family-headings);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 32px;
+}
+
+.resultsButton:hover {
+  background: var(--color-evergreen);
+}
+
+/* ── Reveal Section ────────────────────────────────────────── */
+.revealSection {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.revealBreedName {
+  font-family: var(--font-family-headings);
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  margin: 0 0 4px 0;
+  animation: scaleIn 0.5s ease;
+}
+
+.revealDogBreed {
+  font-family: var(--font-family-headings);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-spruce);
+  margin: 0 0 24px 0;
+  animation: fadeInUp 0.5s ease 0.15s both;
+}
+
+.revealTagline {
+  font-family: var(--font-family-headings);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+  animation: fadeInUp 0.5s ease 0.3s both;
+}
+
+.revealDescription {
+  font-family: var(--font-family-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--color-summit);
+  max-width: 640px;
+  margin: 0 auto 32px auto;
+  animation: fadeInUp 0.5s ease 0.6s both;
+}
+
+.revealTraits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+  animation: fadeInUp 0.5s ease 0.9s both;
+}
+
+.traitPill {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-family: var(--font-family-headings);
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.revealCta {
+  display: inline-block;
+  padding: 14px 36px;
+  background: var(--color-pine);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-family-headings);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  animation: fadeInUp 0.5s ease 1.1s both;
+}
+
+.revealCta:hover {
+  background: var(--color-evergreen);
+}
+
+/* ── Recommendation Section ────────────────────────────────── */
+.recoSection {
+  animation: fadeInUp 0.3s ease;
+}
+
+.recoTitle {
+  font-family: var(--font-family-headings);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+
+.recoSubtitle {
+  font-family: var(--font-family-body);
+  font-size: 14px;
+  color: var(--color-summit);
+  text-align: center;
+  margin: 0 0 32px 0;
+}
+
+.allocationList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.allocationRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.allocationLabel {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-evergreen);
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.allocationBarWrap {
+  flex: 1;
+  height: 28px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.allocationBar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+  min-width: 2px;
+}
+
+.allocationPct {
+  font-family: var(--font-family-headings);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-evergreen);
+  min-width: 42px;
+  text-align: right;
+}
+
+.recoActions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.exploreFundsLink {
+  display: inline-block;
+  padding: 14px 32px;
+  background: var(--color-pine);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-family-headings);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.exploreFundsLink:hover {
+  background: var(--color-evergreen);
+}
+
+.retakeButton {
+  display: inline-block;
+  padding: 14px 32px;
+  background: transparent;
+  color: var(--color-summit);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: var(--font-family-headings);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.retakeButton:hover {
+  border-color: var(--color-pine);
+  color: var(--color-pine);
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .container {
+    padding: 16px;
+  }
+
+  .hero {
+    padding: 40px 16px;
+  }
+
+  .heroTitle {
+    font-size: 28px;
+  }
+
+  .abPrompt {
+    font-size: 22px;
+  }
+
+  .abCards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .abCard {
+    padding: 24px 20px;
+  }
+
+  .revealBreedName {
+    font-size: 32px;
+  }
+
+  .revealTagline {
+    font-size: 18px;
+  }
+
+  .allocationLabel {
+    min-width: 100px;
+    font-size: 12px;
+  }
+
+  .recoActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .exploreFundsLink,
+  .retakeButton {
+    text-align: center;
+  }
+}
