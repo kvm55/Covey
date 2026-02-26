@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -25,8 +26,7 @@ export default function Header() {
       <div className={styles.header__container}>
         {/* Logo lockup: bobwhite + Covey text */}
         <Link href="/" className={styles.logo}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src="/bobwhite-slate.svg"
             alt="Covey bobwhite quail"
             width={32}

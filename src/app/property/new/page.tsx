@@ -140,7 +140,7 @@ export default function NewPropertyPage() {
       .single();
 
     if (error) {
-      console.error("Error saving property:", error.message);
+      if (process.env.NODE_ENV === 'development') console.error("Error saving property:", error.message);
       setSaving(false);
       return;
     }

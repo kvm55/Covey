@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FUNDS } from "@/data/funds";
 import type { FundStrategy } from "@/data/funds";
 import styles from "./PropertyCard.module.css";
@@ -39,9 +40,11 @@ export default function PropertyCard({
 
   return (
     <div className={styles.card}>
-      <img
-        src={imageUrl || "https://via.placeholder.com/300x180"}
+      <Image
+        src={imageUrl || "/images/property-placeholder.jpg"}
         alt="Property"
+        width={300}
+        height={180}
         className={styles.image}
       />
       <div className={styles.content}>

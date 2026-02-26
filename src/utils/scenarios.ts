@@ -48,7 +48,7 @@ export async function fetchScenarios(propertyId: string): Promise<UnderwritingSc
     .order('created_at', { ascending: true });
 
   if (error) {
-    console.error('Error fetching scenarios:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching scenarios:', error.message);
     return [];
   }
   return (data ?? []) as UnderwritingScenarioRow[];
@@ -114,7 +114,7 @@ export async function createScenario(params: CreateScenarioParams): Promise<Unde
     .single();
 
   if (error) {
-    console.error('Error creating scenario:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error creating scenario:', error.message);
     return null;
   }
 
@@ -140,7 +140,7 @@ export async function updateScenario(
     .single();
 
   if (error) {
-    console.error('Error updating scenario:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error updating scenario:', error.message);
     return null;
   }
 
@@ -179,7 +179,7 @@ export async function deleteScenario(scenarioId: string): Promise<boolean> {
     .eq('id', scenarioId);
 
   if (error) {
-    console.error('Error deleting scenario:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error deleting scenario:', error.message);
     return false;
   }
 
@@ -225,7 +225,7 @@ export async function promoteScenario(scenarioId: string): Promise<boolean> {
     .eq('id', scenarioId);
 
   if (error) {
-    console.error('Error promoting scenario:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error promoting scenario:', error.message);
     return false;
   }
 
@@ -279,6 +279,6 @@ async function syncPrimaryToProperty(
     .eq('id', propertyId);
 
   if (error) {
-    console.error('Error syncing primary to property:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error syncing primary to property:', error.message);
   }
 }

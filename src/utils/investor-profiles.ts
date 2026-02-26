@@ -36,7 +36,7 @@ export async function createInvestorProfile(
     .single();
 
   if (error) {
-    console.error('Error creating investor profile:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error creating investor profile:', error.message);
     return null;
   }
   return data as InvestorProfileRow;
@@ -89,7 +89,7 @@ export async function updateInvestorProfile(
     .single();
 
   if (error) {
-    console.error('Error updating investor profile:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error updating investor profile:', error.message);
     return null;
   }
   return data as InvestorProfileRow;
@@ -109,7 +109,7 @@ export async function claimInvestorProfile(
     .is('user_id', null);
 
   if (error) {
-    console.error('Error claiming investor profile:', error.message);
+    if (process.env.NODE_ENV === 'development') console.error('Error claiming investor profile:', error.message);
     return false;
   }
   return true;
