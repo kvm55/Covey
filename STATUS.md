@@ -1,6 +1,6 @@
 # Covey — Project Status
 
-> Last updated: 2026-02-25
+> Last updated: 2026-02-26
 
 ## Platform Vision
 
@@ -95,13 +95,19 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 - [x] "Long Term Hold" → "Long Term Rental" rename (types, enums, data, DB constraints)
 - [x] Unique partial index enforcing one primary per property
 
-### Phase 3: CoveySelect + Compass + Debt Fund — IN PROGRESS
+### Phase 3: CoveySelect + Compass + Debt Fund — COMPLETE
 
-**3A: CoveySelect Enhancement** — NOT STARTED
-- [ ] Expand `/coveyselect` from static fund bundles to interactive fund explorer
-- [ ] Add debt fund section showing available lending capacity and current pipeline
-- [ ] Fund performance cards (target returns, current AUM, deal count)
-- [ ] "Invest" CTA per fund linking to onboarding flow
+**3A: CoveySelect Enhancement — COMPLETE**
+*Commit: 50c582e (Feb 25, 2026)*
+
+- [x] Capital Stack Grid: 3x2 overview (5 equity funds + 1 debt fund) with click-to-scroll navigation
+- [x] Fund performance cards (risk level, target return, deal count, total value)
+- [x] Per-fund stats bars (deal count, total value, avg cap rate, avg IRR) computed client-side
+- [x] Debt Fund detail section with lending terms table (from `COVEY_DEBT_TERMS`), pipeline stats
+- [x] "Invest via Compass" CTA on every fund section + "Fund the Flywheel" debt CTA
+- [x] "Explore in Marketplace" links preserved with `?fund=` param
+- [x] `targetReturn` field added to `FundConfig` interface and all 5 fund entries
+- [x] Full responsive layout (3-col → 2-col → 1-col)
 
 **3B: Compass — Investor Risk Profiling — COMPLETE**
 *Commit: e4a6466 (Feb 26, 2026)*
