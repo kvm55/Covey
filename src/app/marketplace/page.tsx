@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import PropertyFilter from "@/components/PropertyFilter";
 import PropertyCard from "@/components/PropertyCard";
 import styles from "./Marketplace.module.css";
 import { createClient } from "@/utils/supabase";
-import { getFundForStrategy } from "@/data/funds";
+import { getFundForStrategy, FUNDS } from "@/data/funds";
 import type { FundStrategy } from "@/data/funds";
 
 type Property = {
@@ -40,9 +41,27 @@ function formatPrice(price: number): string {
 }
 
 export default function MarketplacePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={styles.container}>
+          <p>Loading properties...</p>
+        </div>
+      }
+    >
+      <MarketplaceContent />
+    </Suspense>
+  );
+}
+
+function MarketplaceContent() {
+  const searchParams = useSearchParams();
+  const fundParam = searchParams.get("fund");
+  const initialFund = fundParam && fundParam in FUNDS ? fundParam : "All";
+
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState("All");
+  const [selectedType, setSelectedType] = useState(initialFund);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("price_asc");
   const [currentPage, setCurrentPage] = useState(1);
