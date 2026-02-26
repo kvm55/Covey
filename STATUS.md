@@ -141,6 +141,16 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 - [x] Financing + Interest Rate rows added to scenario compare table
 - [x] Primary scenario sync includes `financing_source`
 
+### Performance Enhancements — COMPLETE
+*Commit: 93f3109 (Feb 26, 2026)*
+
+- [x] Switched Google Fonts from render-blocking `@import` to `next/font/google` (Jura + Merriweather via CSS variables)
+- [x] Replaced `<img>` with `next/image` in PropertyCard and Header; local placeholder replaces `via.placeholder.com`
+- [x] Created `next.config.ts` with AVIF/WebP image format optimization
+- [x] Added `viewport` export and Open Graph metadata to root layout
+- [x] Server-side data fetching: split Marketplace, CoveySelect, Dashboard, and Property Detail into server components (fetch) + client components (interactivity), wiring up `supabase-server.ts`
+- [x] Guarded all `console.error` calls with `NODE_ENV === 'development'` checks (scenarios.ts, investor-profiles.ts, property/new)
+
 ### Phase 4: Dashboard + Analytics — NOT STARTED
 - [ ] Portfolio analytics with charting (chart.js or recharts)
 - [ ] Deal scoring engine (automated buy/pass/watch classification)
@@ -196,9 +206,15 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 | Fund definitions | `src/data/funds.ts` |
 | Type system | `src/types/` (enums, property, building, unit, etc.) |
 | New deal form | `src/app/property/new/page.tsx` |
-| Deal detail | `src/app/property/[id]/page.tsx` |
-| Marketplace | `src/app/marketplace/page.tsx` |
-| CoveySelect | `src/app/coveyselect/page.tsx` |
+| Deal detail (server) | `src/app/property/[id]/page.tsx` |
+| Deal detail (client) | `src/app/property/[id]/PropertyDetailClient.tsx` |
+| Marketplace (server) | `src/app/marketplace/page.tsx` |
+| Marketplace (client) | `src/app/marketplace/MarketplaceClient.tsx` |
+| CoveySelect (server) | `src/app/coveyselect/page.tsx` |
+| CoveySelect (client) | `src/app/coveyselect/CoveySelectClient.tsx` |
+| Dashboard (server) | `src/app/dashboard/page.tsx` |
+| Dashboard (client) | `src/app/dashboard/DashboardClient.tsx` |
+| Next.js config | `next.config.ts` |
 | Compass | `src/app/compass/page.tsx` |
 | Compass data & scoring | `src/data/eyetest.ts` |
 | Investor profile CRUD | `src/utils/investor-profiles.ts` |
