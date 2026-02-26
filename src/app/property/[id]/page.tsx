@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase";
 import { PropertyInputs, UnderwritingResults, runUnderwriting, formatCurrency, formatPercent, formatMultiple } from "@/utils/underwriting";
+import { FUNDS, getFundForStrategy } from "@/data/funds";
+import type { FundStrategy } from "@/data/funds";
 import styles from "./PropertyDetailPage.module.css";
 
 interface DealData {
@@ -29,6 +31,7 @@ interface SupabaseProperty {
   bedrooms: number;
   bathrooms: number;
   square_feet: number;
+  fund_strategy: FundStrategy | null;
 }
 
 export default function PropertyDetailPage() {
@@ -86,7 +89,18 @@ export default function PropertyDetailPage() {
         <div className={styles.header}>
           <Link href="/marketplace" className={styles.backLink}>← Back to Marketplace</Link>
           <h1 className={styles.title}>{supabaseProperty.street_address}</h1>
-          <p className={styles.subtitle}>{supabaseProperty.city}, {supabaseProperty.state} {supabaseProperty.zip}</p>
+          <p className={styles.subtitle}>
+            {supabaseProperty.city}, {supabaseProperty.state} {supabaseProperty.zip}
+            {(() => {
+              const fundId = supabaseProperty.fund_strategy || getFundForStrategy(supabaseProperty.type);
+              const fund = FUNDS[fundId];
+              return (
+                <span className={styles.fundBadge} style={{ backgroundColor: fund.color }}>
+                  {fund.name.replace(' Fund', '')} ({fund.label})
+                </span>
+              );
+            })()}
+          </p>
         </div>
         <div className={styles.metricsBar}>
           <div className={styles.metricItem}><span className={styles.metricLabel}>Cap Rate</span><span className={styles.metricVal}>{(supabaseProperty.cap_rate * 100).toFixed(1)}%</span></div>
@@ -119,7 +133,19 @@ export default function PropertyDetailPage() {
             <h1 className={styles.title}>{inp.streetAddress || 'Untitled Deal'}</h1>
             <p className={styles.subtitle}>
               {inp.city}{inp.city && inp.state ? ', ' : ''}{inp.state} {inp.zip}
-              {inp.type && <span className={styles.typeBadge}>{inp.type}</span>}
+              {inp.type && (
+                <>
+                  {(() => {
+                    const fund = FUNDS[getFundForStrategy(inp.type)];
+                    return (
+                      <span className={styles.fundBadge} style={{ backgroundColor: fund.color }}>
+                        {fund.name.replace(' Fund', '')} ({fund.label})
+                      </span>
+                    );
+                  })()}
+                  <span className={styles.typeBadge}>{inp.type}</span>
+                </>
+              )}
             </p>
           </div>
           <div className={styles.dealId}>ID: {deal!.id}</div>
