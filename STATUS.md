@@ -1,6 +1,6 @@
 # Covey — Project Status
 
-> Last updated: 2026-02-25
+> Last updated: 2026-02-26
 
 ## Platform Vision
 
@@ -39,7 +39,7 @@ The debt fund creates a closed-loop flywheel: investors provide loan capital, Co
 
 **Flywheel:** LP capital → Debt Fund → Loans to equity deals → Interest income → LP distributions → Recycle. The equity side gets certainty of execution; the debt side gets deal flow without origination costs.
 
-### Investor Matching (The Dogs — Eye Test Profiles)
+### Investor Matching (The Dogs — Compass Profiles)
 
 | Profile | Breed | Maps To | Temperament |
 |---------|-------|---------|-------------|
@@ -95,23 +95,28 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 - [x] "Long Term Hold" → "Long Term Rental" rename (types, enums, data, DB constraints)
 - [x] Unique partial index enforcing one primary per property
 
-### Phase 3: CoveySelect + Eye Test — NOT STARTED
+### Phase 3: CoveySelect + Compass — IN PROGRESS
 
-**3A: CoveySelect Enhancement**
+**3A: CoveySelect Enhancement** — NOT STARTED
 - [ ] Expand `/coveyselect` from static fund bundles to interactive fund explorer
 - [ ] Add debt fund section showing available lending capacity and current pipeline
 - [ ] Fund performance cards (target returns, current AUM, deal count)
 - [ ] "Invest" CTA per fund linking to onboarding flow
 
-**3B: Eye Test — Investor Risk Profiling**
-- [ ] 4-phase onboarding flow:
-  1. **Visual A/B Comparisons** — show two deal profiles side by side, investor picks preferred. 6-8 rounds covering yield vs growth, stable vs volatile, impact vs alpha
-  2. **Slider Calibration** — fine-tune preferences: risk tolerance, time horizon, min yield, liquidity needs, impact preference
-  3. **Breed Reveal** — animated reveal of investor's dog breed profile with personality description
-  4. **Recommendation Engine** — map profile to fund allocation (e.g., 60% Pheasant, 25% Bobwhite, 15% debt fund)
-- [ ] Persist profile to Supabase (`investor_profiles` table)
-- [ ] Include debt fund allocation in recommendations (income-oriented profiles get higher debt fund %)
-- [ ] Profile results page with recommended deals from matched funds
+**3B: Compass — Investor Risk Profiling — COMPLETE**
+*Commit: e4a6466 (Feb 26, 2026)*
+
+- [x] 5-step state machine: intro → A/B comparisons → slider calibration → breed reveal → allocation recommendation
+- [x] 8 A/B comparison rounds (yield vs growth, holding period, market preference, impact, involvement, etc.)
+- [x] 5 calibration sliders (risk tolerance, time horizon, min yield, liquidity need, impact preference)
+- [x] Animated breed reveal with staggered CSS animations (scaleIn, fadeInUp)
+- [x] 5 breed profiles with taglines, descriptions, and trait pills (Setter, Boykin, Brittany, GSP, Vizsla)
+- [x] Fund allocation engine with debt fund carve-out (income-oriented → 15-30% debt; growth → 5-10%)
+- [x] Supabase `investor_profiles` table with RLS (anonymous insert, public read, owner update)
+- [x] No auth required — lead-gen tool, anonymous profiles claimable on sign-in
+- [x] Professional copywriting pass (editorial audit + full rewrite of prompts, descriptions, breed profiles)
+- [x] Header nav link ("Compass" at `/compass`)
+- [x] Type exports from `src/types/index.ts`
 
 **3C: Debt Fund Integration (Underwriting)**
 - [ ] Add debt fund as financing source option in underwriting form
@@ -158,6 +163,7 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 | 003 | add_fund_strategy | 2026-02-25 | fund_strategy column + CHECK constraint |
 | 004 | create_hierarchy_tables | 2026-02-25 | 13 relational tables + auto-migration |
 | 005 | scenario_updates | 2026-02-25 | Unique primary index + LTH→LTR rename |
+| 006 | create_investor_profiles | 2026-02-26 | Investor profiles table for Compass (breed, scores, allocation) |
 
 ---
 
@@ -173,6 +179,9 @@ Risk spectrum (conservative → aggressive): Setter → Boykin → Brittany → 
 | Deal detail | `src/app/property/[id]/page.tsx` |
 | Marketplace | `src/app/marketplace/page.tsx` |
 | CoveySelect | `src/app/coveyselect/page.tsx` |
+| Compass | `src/app/compass/page.tsx` |
+| Compass data & scoring | `src/data/eyetest.ts` |
+| Investor profile CRUD | `src/utils/investor-profiles.ts` |
 | Migrations | `supabase/migrations/` |
 
 ---
