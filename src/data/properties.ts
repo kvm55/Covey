@@ -1,14 +1,12 @@
 import type { FundStrategy } from './funds';
 
-export type PropertyType =
-  | 'Long Term Hold'
-  | 'Fix and Flip'
-  | 'Short Term Rental'
-  | 'Cohabitation'
-  | 'Build to Rent'
-  | 'Development'
-  | 'Workforce Housing'
-  | 'Value Add';
+/**
+ * @deprecated — Canonical types live in `@/types`. Import from there for new code.
+ * This file is kept for backward compatibility with existing components.
+ */
+export type { PropertyType } from '@/types/enums';
+
+import type { PropertyType } from '@/types/enums';
 
 export interface Property {
   id: string;
